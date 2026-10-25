@@ -1,0 +1,24 @@
+
+# Secrets
+.env
+.env.*
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Cache
+.cache/
+.pytest_cache/
+
+# Local datasets
+data/*
+!data/.gitkeep
+
+# Generated files and local results
+generated_code.py
+results.jsonl
+
+# IDE
+.vscode/
