@@ -1,31 +1,56 @@
 
 from pathlib import Path
+import json
+import math
+
+import numpy as np
 import pandas as pd
 
 
-# 1. Завантажуємо вибрану таблицю
+def normalize_result(value):
+    """Перетворює результат на JSON-сумісні типи."""
+
+    if value is None or value is pd.NA or value is pd.NaT:
+        return None
+
+    if isinstance(value, np.generic):
+        value = value.item()
+
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+
+    if isinstance(value, dict):
+        return {
+            str(key): normalize_result(item)
+            for key, item in value.items()
+        }
+
+    if isinstance(value, (list, tuple, np.ndarray, pd.Series)):
+        return [normalize_result(item) for item in value]
+
+    if isinstance(value, (str, int, float, bool)):
+        return value
+
+    return str(value)
+
+
 df = pd.read_parquet("/app/data/table.parquet")
 
-# 2. Читаємо згенерований Python-код
 code = Path("/app/generated_code.py").read_text(
     encoding="utf-8"
 )
 
-# 3. Створюємо середовище виконання
-namespace = {
-    "df": df
-}
-
-# 4. Виконуємо згенерований код
+namespace = {"df": df}
 exec(code, namespace)
 
-# 5. Перевіряємо наявність результату
 if "result" not in namespace:
     raise ValueError(
         "Generated code did not define the required variable 'result'."
     )
 
-result = namespace["result"]
+result = normalize_result(namespace["result"])
 
-# 6. Виводимо результат для Docker Executor
-print("Sandbox result:", result)
+print(
+    "Sandbox result:",
+    json.dumps(result, ensure_ascii=False, allow_nan=False),
+)

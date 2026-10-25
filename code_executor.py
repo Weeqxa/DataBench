@@ -1,5 +1,6 @@
 
 import ast
+import json
 import re
 import subprocess
 import uuid
@@ -7,6 +8,7 @@ from pathlib import Path
 
 
 def validate_code(code):
+    """Перевіряє синтаксис згенерованого Python-коду."""
     try:
         ast.parse(code)
         return True
@@ -16,14 +18,21 @@ def validate_code(code):
 
 
 def run_code_in_docker(table_id, lite=False):
-    # Перевіряємо ID таблиці
-    if not re.fullmatch(r"\d{3}_[A-Za-z0-9_]+", table_id):
+    """Виконує згенерований код в ізольованому Docker-контейнері."""
+
+    # 1. Перевіряємо ID таблиці.
+    if not isinstance(table_id, str) or not re.fullmatch(
+        r"\d{3}_[A-Za-z0-9_]+", table_id
+    ):
         raise ValueError("Invalid table ID")
+
+    # 2. Перевіряємо режим даних.
+    if not isinstance(lite, bool):
+        raise ValueError("'lite' must be a boolean")
 
     project_dir = Path(__file__).resolve().parent
     table_dir = project_dir / "data" / table_id
 
-    # Вибираємо файл для відповідного режиму
     filename = "sample.parquet" if lite else "all.parquet"
     table_file = table_dir / filename
 
@@ -66,7 +75,7 @@ def run_code_in_docker(table_id, lite=False):
         "--mount",
         f"type=bind,source={code_file},target=/app/generated_code.py,readonly",
         "databench-executor",
-        "python", "-B", "/app/sandbox_runner.py"
+        "python", "-B", "/app/sandbox_runner.py",
     ]
 
     try:
@@ -74,36 +83,55 @@ def run_code_in_docker(table_id, lite=False):
             command,
             capture_output=True,
             text=True,
-            timeout=20
+            timeout=20,
         )
 
+        # 3. Обробляємо помилку виконання в Docker.
         if completed.returncode != 0:
-            print("Docker error:", completed.stderr)
+            print("Docker execution failed.")
+            print("Exit code:", completed.returncode)
+            print("STDOUT:", completed.stdout)
+            print("STDERR:", completed.stderr)
             return None
 
+        # 4. Перевіряємо формат виводу sandbox_runner.py.
         output = completed.stdout.strip()
         prefix = "Sandbox result: "
 
         if not output.startswith(prefix):
             print("Error: Unexpected Docker output")
+            print("STDOUT:", repr(output))
             return None
 
-        answer = output[len(prefix):].strip()
-        print("Docker answer:", answer)
+        payload = output[len(prefix):].strip()
 
+        # 5. Декодуємо JSON у відповідний Python-тип.
+        try:
+            answer = json.loads(payload)
+        except json.JSONDecodeError as error:
+            print("Error: Invalid JSON returned by sandbox:", error)
+            print("Raw output:", repr(payload))
+            return None
+
+        print("Docker answer:", answer)
         return answer
 
     except subprocess.TimeoutExpired:
         print("Error: Execution timed out!")
         return None
 
+    except OSError as error:
+        print("Error: Could not execute Docker:", error)
+        return None
+
     finally:
+        # 6. Прибираємо контейнер, якщо він залишився.
         try:
             subprocess.run(
                 ["docker", "rm", "-f", container_name],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
         except (subprocess.TimeoutExpired, OSError):
             pass

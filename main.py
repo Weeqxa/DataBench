@@ -1,6 +1,9 @@
 
 import json
+import time
+
 from pathlib import Path
+
 
 from datasets import load_dataset
 
@@ -18,8 +21,10 @@ CODE_PATH = Path("generated_code.py")
 
 
 
+
 def process_question(dataset, index, mode):
-    """Обробляє одне запитання та повертає результат."""
+    """Обробляє запитання з максимум однією повторною генерацією коду."""
+
     if mode not in ("full", "lite"):
         return {
             "index": index,
@@ -29,7 +34,6 @@ def process_question(dataset, index, mode):
         }
 
     question_data = dataset[index]
-
 
     table_id = question_data["dataset"]
     question = question_data["question"]
@@ -53,59 +57,100 @@ def process_question(dataset, index, mode):
         "status": "error",
         "error": None,
         "generated_code": None,
+        "attempts": 0,
     }
 
+    if expected_answer is None:
+        record["status"] = "unscored"
+        record["error"] = "Expected answer is missing"
+        return record
+
     try:
-        # 1. Завантажуємо таблицю
         df = load_table(table_id, lite=(mode == "lite"))
         schema = get_table_schema(df)
 
-        # 2. Формуємо prompt з урахуванням типу відповіді
-        prompt = build_prompt(
+        base_prompt = build_prompt(
             question,
             schema,
             answer_type=answer_type,
         )
 
-        # 3. Генеруємо код через Gemini
-        raw_code = generate_code(prompt)
-        generated_code = clean_generated_code(raw_code)
-        record["generated_code"] = generated_code
+        previous_error = None
 
-        # 4. Перевіряємо синтаксис
-        if not validate_code(generated_code):
-            record["error"] = "Invalid Python syntax"
-            return record
+        # Максимум дві спроби: початкова та одна повторна.
+        for attempt in range(1, 3):
+            record["attempts"] = attempt
 
-        # 5. Зберігаємо останній згенерований код
-        CODE_PATH.write_text(generated_code, encoding="utf-8")
+            if attempt == 1:
+                prompt = base_prompt
+            else:
+                print("Retrying code generation after execution error...")
 
-        # 6. Виконуємо код у Docker
-        answer = run_code_in_docker(
-            table_id,
-            lite=(mode == "lite"),
-        )
+                prompt = f"""
+{base_prompt}
 
-        if answer is None:
-            record["error"] = "Execution failed"
-            return record
+The previous generated code failed.
 
-        record["predicted_answer"] = answer
+Previous code:
+{record["generated_code"]}
 
-        # 7. Перевіряємо наявність еталонної відповіді
-        if expected_answer is None:
-            record["error"] = "Expected answer is missing"
-            return record
+Error:
+{previous_error}
 
-        # 8. Оцінюємо відповідь
-        record["correct"] = bool(
-            evaluate_answer(
-                predicted=answer,
-                expected=expected_answer,
-                answer_type=answer_type,
+Generate corrected Python code.
+Fix the specific error shown above.
+Follow all original rules and return only executable Python code.
+"""
+
+            # Генеруємо код.
+            raw_code = generate_code(prompt)
+            generated_code = clean_generated_code(raw_code)
+            record["generated_code"] = generated_code
+
+            # Перевіряємо синтаксис.
+            if not validate_code(generated_code):
+                previous_error = "Invalid Python syntax"
+                record["error"] = previous_error
+
+                if attempt < 2:
+                    continue
+
+                return record
+
+            # Зберігаємо код перед виконанням.
+            CODE_PATH.write_text(
+                generated_code,
+                encoding="utf-8",
             )
-        )
-        record["status"] = "success"
+
+            # Виконуємо код у Docker.
+            answer = run_code_in_docker(
+                table_id,
+                lite=(mode == "lite"),
+            )
+
+            if answer is None:
+                previous_error = "Docker execution failed. Check the traceback above."
+                record["error"] = previous_error
+
+                if attempt < 2:
+                    continue
+
+                return record
+
+            # Виконання успішне — оцінюємо відповідь.
+            record["predicted_answer"] = answer
+            record["correct"] = bool(
+                evaluate_answer(
+                    predicted=answer,
+                    expected=expected_answer,
+                    answer_type=answer_type,
+                )
+            )
+            record["status"] = "success"
+            record["error"] = None
+
+            return record
 
     except Exception as error:
         record["error"] = f"{type(error).__name__}: {error}"
