@@ -1,0 +1,168 @@
+\section{Metodika hodnotenia a použité metriky}
+\label{sec:metodika-hodnotenia}
+
+\subsection{Cieľ hodnotenia}
+
+Cieľom hodnotenia je overiť, do akej miery dokáže navrhovaný systém správne odpovedať na otázky nad tabuľkovými dátami v rámci benchmarku DataBench. Hodnotenie sa zameriava na správnosť výsledných odpovedí a na schopnosť systému úspešne dokončiť proces generovania a vykonávania Python kódu.
+
+Keďže navrhovaný baseline využíva jazykový model na generovanie kódu, úspešnosť systému závisí od viacerých faktorov. Model musí správne interpretovať otázku, identifikovať relevantné stĺpce tabuľky, zvoliť vhodný spôsob spracovania údajov a vytvoriť odpoveď v požadovanom formáte. Chyba v ktorejkoľvek z týchto fáz môže viesť k nesprávnemu výsledku alebo k neúspešnému dokončeniu úlohy.
+
+Na vyhodnotenie odpovedí sa využíva nástroj
+\texttt{databench\_eval}, ktorý porovnáva predikcie s referenčnými odpoveďami podľa pravidiel benchmarku. Výsledky spracovania sa zároveň ukladajú do súboru \texttt{results.jsonl}, ktorý obsahuje záznamy o jednotlivých otázkach a ich vyhodnotení.
+
+\subsection{Metriky hodnotenia}
+
+Implementácia baseline používa dve základné metriky: \textit{Accuracy} a \textit{Execution Error Rate}. Pri interpretácii týchto metrík je potrebné zohľadniť spôsob, akým aktuálna implementácia rozlišuje úspešne spracované otázky od ostatných prípadov.
+
+\subsubsection{Accuracy}
+
+Metrika \textit{Accuracy} vyjadruje podiel správnych odpovedí spomedzi otázok, ktoré systém úspešne spracoval. V aktuálnej implementácii sa počet správnych odpovedí delí počtom úspešne spracovaných otázok.
+
+Metrika sa vypočíta podľa vzorca:
+
+\begin{equation}
+\mathrm{Accuracy} =
+\frac{N_{\mathrm{correct}}}
+{N_{\mathrm{successful}}}
+\end{equation}
+
+kde $N_{\mathrm{correct}}$ predstavuje počet správnych odpovedí a
+$N_{\mathrm{successful}}$ počet úspešne spracovaných otázok.
+
+Správnosť odpovedí sa určuje pomocou hodnotiaceho nástroja
+\texttt{databench\_eval}. Pri hodnotení je potrebné rešpektovať očakávaný typ odpovede, pretože benchmark obsahuje rôzne formáty výstupov, napríklad logické hodnoty, kategórie, číselné hodnoty a zoznamy hodnôt.
+
+Keďže sa pri výpočte tejto metriky nezohľadňujú neúspešne spracované otázky v menovateli, výslednú hodnotu je potrebné interpretovať spolu s počtom úspešne spracovaných otázok a počtom všetkých spracovaných otázok.
+
+\subsubsection{Execution Error Rate}
+
+Metrika \textit{Execution Error Rate} v aktuálnej implementácii vyjadruje podiel otázok, ktoré neboli označené ako úspešne spracované, z celkového počtu spracovaných otázok.
+
+V implementácii sa vypočíta podľa vzorca:
+
+\begin{equation}
+\mathrm{ExecutionErrorRate} =
+\frac{N_{\mathrm{total}} - N_{\mathrm{successful}}}
+{N_{\mathrm{total}}}
+\end{equation}
+
+kde $N_{\mathrm{total}}$ označuje celkový počet spracovaných otázok a
+$N_{\mathrm{successful}}$ počet otázok označených ako úspešne spracované.
+
+Táto metrika poskytuje prehľad o podiele prípadov, pri ktorých sa nepodarilo úspešne dokončiť spracovanie otázky. Vzhľadom na aktuálnu implementáciu však nejde výlučne o mieru chýb pri vykonávaní Python kódu. Medzi neúspešné prípady môžu patriť aj iné stavy spracovania, ktoré nie sú označené ako úspešné.
+
+Preto sa táto hodnota interpretuje ako ukazovateľ neúspešného spracovania otázok, nie ako presný počet chýb jednotlivých vykonaní kódu. Na samostatné meranie chýb vykonávania by bolo potrebné evidovať počet pokusov o vykonanie kódu a počet neúspešných vykonaní nezávisle od ostatných stavov.
+
+\subsubsection{Počet úspešne spracovaných otázok}
+
+Okrem uvedených metrík sa sleduje aj počet otázok, ktoré systém úspešne spracoval. Tento údaj umožňuje posúdiť, na akom počte otázok je založená hodnota metriky \textit{Accuracy}.
+
+Samotné úspešné spracovanie otázky ešte nezaručuje správnosť odpovede. Preto je potrebné tento údaj interpretovať spolu s metrikou \textit{Accuracy} a s celkovým počtom spracovaných otázok.
+
+\subsection{Postup hodnotenia}
+
+Hodnotenie pozostáva z niekoľkých krokov. Najskôr systém načíta otázku a identifikátor príslušnej tabuľky. Následne načíta tabuľkové dáta a pomocou jazykového modelu vytvorí Python kód určený na spracovanie týchto dát.
+
+Vygenerovaný kód sa následne vykoná v kontrolovanom prostredí. Výsledok sa spracuje a prevedie do očakávaného formátu odpovede. Počas tohto procesu sa zaznamenávajú aj prípady, pri ktorých sa nepodarí úspešne dokončiť spracovanie otázky.
+
+Výsledky jednotlivých otázok sa ukladajú do súboru
+\texttt{results.jsonl}. Tento súbor slúži ako záznam o priebehu spracovania a obsahuje údaje potrebné na kontrolu výsledkov a analýzu neúspešných prípadov.
+
+Na vyhodnotenie správnosti predikcií sa používa nástroj
+\texttt{databench\_eval}, ktorý porovnáva vytvorené odpovede s referenčnými odpoveďami podľa pravidiel benchmarku.
+
+Pri analýze výsledkov je potrebné rozlišovať medzi úspešným vykonaním kódu a správnosťou odpovede. Aj v prípade, keď sa kód vykoná bez chyby, môže vytvorená odpoveď obsahovať nesprávnu hodnotu. Naopak, ak sa spracovanie otázky nepodarí dokončiť, prípad sa musí zohľadniť pri interpretácii celkovej úspešnosti systému.
+
+Aktuálna implementácia zaznamenáva výsledky vo formáte
+\texttt{results.jsonl}. Samostatné súbory
+\texttt{predictions.txt} a \texttt{predictions\_lite.txt}, ktoré by obsahovali iba predikcie v poradí otázok požadovanom benchmarkom, nie sú v súčasnej verzii implementované.
+
+\subsection{Porovnanie DataBench a DataBench Lite}
+
+Pri vyhodnocovaní je potrebné rozlišovať medzi variantmi DataBench a DataBench Lite. Plná verzia pracuje s úplnými tabuľkami, zatiaľ čo variant Lite využíva vzorky tabuliek.
+
+Rozsah dostupných údajov môže ovplyvniť schopnosť systému správne odpovedať na otázky. Pri práci so vzorkami nemusia byť dostupné všetky riadky potrebné na získanie správnej odpovede. Výsledky oboch variantov preto treba interpretovať s ohľadom na použitý rozsah dát.
+
+Pre korektné porovnanie je potrebné vyhodnotiť oba varianty samostatne a zaznamenať použitú konfiguráciu experimentu. Zároveň je potrebné zabezpečiť, aby boli výsledky priradené k správnemu variantu datasetu a aby sa pri ich interpretácii zohľadnili rozdiely v použitých dátach.
+
+\subsection{Reprodukovateľnosť experimentov}
+
+Na zabezpečenie reprodukovateľnosti je potrebné zaznamenávať parametre použité pri jednotlivých experimentoch. Patria medzi ne najmä identifikácia jazykového modelu, konfigurácia generovania, verzia promptu, použitá verzia hodnotiaceho nástroja a počet spracovaných otázok. Konfigurácia použitá v aktuálnej implementácii baseline je uvedená v tabuľke~\ref{tab:repro}.
+
+\% V preambule:
+% \usepackage{booktabs}
+% \usepackage[table]{xcolor}
+% \usepackage{array}
+% \definecolor{groupgray}{gray}{0.92}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Konfigurácia experimentov baseline}
+\label{tab:repro}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{8.6cm}@{}}
+\toprule
+\textbf{Oblasť} & \textbf{Použité nastavenie} \\
+\midrule
+
+\multicolumn{2}{@{}l}{\textbf{Generovanie kódu}} \\
+Model & \texttt{gemini-3.5-flash-lite} cez Google Gemini API (knižnica \texttt{google-genai}, verzia: \textit{doplniť}) \\
+Parametre generovania & predvolené hodnoty API; \texttt{temperature}, \texttt{top\_p}, \texttt{top\_k} ani \texttt{seed} nie sú nastavené, preto generovanie nie je deterministické \\
+Prompt & verzia v1 (\texttt{build\_prompt()}), bez systémového promptu; obsahuje otázku, schému tabuľky, očakávaný typ odpovede a pravidlá pre výstup \\
+Počet pokusov & najviac 2 generovania na otázku (prvotné a jedno opravné); pri limite požiadaviek API až 5 opakovaní s čakaním 5--60~s \\
+
+\addlinespace
+\multicolumn{2}{@{}l}{\textbf{Vykonávanie kódu}} \\
+Prostredie & Docker, obraz \texttt{python:3.13-slim} s knižnicami \texttt{pandas} a \texttt{pyarrow} (verzie nie sú pripnuté) \\
+Obmedzenia & bez siete, 512~MB RAM, 1~CPU, časový limit 20~s \\
+
+\addlinespace
+\multicolumn{2}{@{}l}{\textbf{Dáta a vyhodnotenie}} \\
+Dataset & \texttt{cardiffnlp/databench}, konfigurácia \texttt{qa}, rozdelenie \texttt{train}; počet záznamov a revízia: \textit{doplniť} \\
+Režimy & \texttt{full}: \texttt{all.parquet}, referenčná odpoveď \texttt{answer}; \texttt{lite}: \texttt{sample.parquet}, referenčná odpoveď \texttt{sample\_answer} \\
+Hodnotenie & \texttt{databench\_eval} (verzia alebo commit: \textit{doplniť}) \\
+Ostatné knižnice & \texttt{datasets}, \texttt{pandas}, \texttt{pyarrow}, \texttt{numpy} (verzie: \textit{doplniť}) \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+Keďže teplota ani náhodné semienko (\texttt{seed}) nie sú explicitne nastavené, generovanie kódu nie je deterministické. Opakované spustenie na rovnakých otázkach preto môže vytvoriť odlišný kód a mierne odlišné výsledky. Z tohto dôvodu sa pri každom experimente ukladá vygenerovaný kód aj predikcia, aby bolo možné výsledky spätne skontrolovať.
+
+Súbor \texttt{results.jsonl} poskytuje záznamy o spracovaní jednotlivých otázok a umožňuje spätne analyzovať výsledky. Každý záznam obsahuje režim dát (\texttt{mode}), vygenerovaný kód a počet pokusov (\texttt{attempts}). Na úplnú reprodukovateľnosť je však potrebné zaznamenať aj konfiguráciu experimentu a verzie použitých knižníc a nástrojov, ktoré sú uvedené vyššie.
+
+Pri interpretácii výsledkov sa musí uvádzať aj použitá množina dát. Výsledky získané na tréningových alebo vývojových dátach sa nesmú zamieňať s výsledkami záverečného hodnotenia na testovacích dátach. Referenčné odpovede z rozdelenia \texttt{qa}/\texttt{train}, ktoré sa používajú v tejto etape, slúžia iba na vývojovú kontrolu baseline.
+
+Referenčné testovacie odpovede sa nemajú používať na priebežné prispôsobovanie promptov ani na ladenie systému, pretože takýto postup by mohol ovplyvniť objektivitu záverečného hodnotenia.
+
+\subsection{Prezentácia výsledkov}
+
+Výsledky hodnotenia baseline sa sumarizujú pomocou počtu spracovaných otázok, počtu úspešne spracovaných otázok a hodnôt metrík \textit{Accuracy} a \textit{Execution Error Rate}. Tabuľka~\ref{tab:baseline-metriky} poskytuje priestor na porovnanie výsledkov jednotlivých variantov benchmarku.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Vyhodnotenie baseline}
+    \label{tab:baseline-metriky}
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Metrika} &
+        \textbf{DataBench} &
+        \textbf{DataBench Lite} \\
+        \hline
+        Počet spracovaných otázok & -- & -- \\
+        \hline
+        Počet úspešne spracovaných otázok & -- & -- \\
+        \hline
+        Počet správnych odpovedí & -- & -- \\
+        \hline
+        Accuracy & -- & -- \\
+        \hline
+        Execution Error Rate & -- & -- \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Hodnoty v tabuľke sa doplnia po vykonaní experimentov. Pri prezentácii výsledkov je potrebné uviesť, že hodnota \textit{Accuracy} sa v aktuálnej implementácii počíta iba z úspešne spracovaných otázok, zatiaľ čo \textit{Execution Error Rate} predstavuje podiel otázok, ktoré neboli označené ako úspešne spracované.
+
+Takto prezentované výsledky umožňujú posúdiť správnosť odpovedí aj schopnosť systému dokončiť spracovanie otázok. Zároveň poskytujú základ na identifikáciu obmedzení aktuálneho baseline a na plánovanie jeho ďalších zlepšení.

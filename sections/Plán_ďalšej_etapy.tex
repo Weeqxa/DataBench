@@ -1,0 +1,95 @@
+\section{Obmedzenia riešenia a plán ďalšej etapy}
+
+Implementovaný baseline slúži ako základ pre experimenty v druhej etape projektu. V tejto kapitole sú zhrnuté známe obmedzenia aktuálnej implementácie, ich možný dopad na výsledky a plánované úpravy. Ide o plán práce a analýzu rizík, nie o už dosiahnuté výsledky. Obmedzenia vychádzajú z analýzy zdrojového kódu a z priebehu doterajšieho testovania.
+
+\subsection{Obmedzenia aktuálnej implementácie}
+
+\subsubsection*{Generovanie kódu a prompt}
+
+\begin{itemize}
+    \item \textbf{Obmedzená informácia o dátach v prompte.} Model dostáva iba názvy stĺpcov, ich dátové typy a očakávaný typ odpovede. Nevidí ukážkové riadky ani konkrétne hodnoty v kategoriálnych stĺpcoch. Pri otázkach, kde záleží na presnom zápise hodnoty (napríklad názov krajiny alebo kategórie), môže model použiť nesprávny reťazec a filter nevráti žiadne riadky.
+    \item \textbf{Jediná verzia promptu.} Prompt obsahuje všeobecné pravidlá, ale neobsahuje ukážky riešení (few-shot) a ani sa nemení podľa typu otázky okrem krátkych inštrukcií pre jednotlivé typy odpovede. Vplyv jednotlivých pravidiel na presnosť nebol zatiaľ meraný.
+    \item \textbf{Jazyk otázok.} Dataset obsahuje otázky v angličtine aj španielčine, zatiaľ však nebolo overené, ako sa prístup správa pri španielskych otázkach.
+    \item \textbf{Nedeterminizmus generovania.} Teplota ani \texttt{seed} nie sú nastavené. Opakované spustenie na rovnakých otázkach môže priniesť odlišný kód a mierne odlišné výsledky, čo komplikuje porovnanie experimentov.
+\end{itemize}
+
+\subsubsection*{Opakovanie po chybe}
+
+\begin{itemize}
+    \item \textbf{Spätná väzba pri chybách.} Pri zlyhaní vykonania v Dockeri funkcia \texttt{run\_code\_in\_docker()} vráti iba hodnotu \texttt{None} a model dostane všeobecnú informáciu o neúspechu. Konkrétny traceback sa vypíše do konzoly, ale nie je štruktúrovane odovzdaný späť, takže oprava v druhom pokuse je menej cielená.
+    \item \textbf{Nerozlíšené príčiny zlyhania.} Hodnota \texttt{None} spája rôzne situácie: chybu v kóde, prekročenie časového limitu, nedostatok pamäte aj nedostupnosť Dockeru. Z uložených záznamov preto nie je možné spoľahlivo určiť, ktorá príčina zlyhania prevláda.
+    \item \textbf{Iba jedna oprava.} V rámci jednej otázky je povolený jeden opravný pokus. Zložitejšie otázky môžu vyžadovať viac iterácií, no zatiaľ nebolo skúmané, či by ďalšie pokusy zlepšili výsledok.
+\end{itemize}
+
+\subsubsection*{Vykonávanie kódu}
+
+\begin{itemize}
+    \item \textbf{Zdieľaný súbor s kódom.} Vygenerovaný kód sa ukladá do jedného súboru \texttt{generated\_code.py}. Súbežné spustenia by sa navzájom prepisovali, preto spracovanie otázok prebieha sekvenčne a nie je ho možné bezpečne paralelizovať bez samostatných dočasných súborov.
+    \item \textbf{Výkon.} Pre každú otázku sa spúšťa nový Docker kontajner. Pri väčších dávkach otázok tak vzniká réžia spúšťania a celkový čas spracovania je dlhší.
+    \item \textbf{Zdrojové limity.} Limit 512~MB pamäte a 20~s času je vhodný na ochranu hostiteľského systému, ale pri veľkých tabuľkách v režime \texttt{full} môže viesť k zlyhaniu aj pri správnom kóde. Rozsah tohto problému ešte nebol vyhodnotený.
+    \item \textbf{Bezpečnosť.} Docker kontajner s obmedzeniami (bez siete, odobraté oprávnenia, súborový systém iba na čítanie) znižuje riziko, ale nie je formálnou zárukou bezpečnosti pri vykonávaní kódu generovaného jazykovým modelom.
+\end{itemize}
+
+\subsubsection*{Vyhodnotenie a metriky}
+
+\begin{itemize}
+    \item \textbf{Accuracy iba z úspešných otázok.} Metrika sa počíta ako podiel správnych odpovedí z úspešne spracovaných otázok. Otázky, ktoré sa nepodarilo dokončiť, sa do menovateľa nezahŕňajú, a hodnota môže byť preto optimistickejšia než presnosť počítaná zo všetkých otázok.
+    \item \textbf{Hrubá kategorizácia stavov.} Execution Error Rate zahŕňa všetky neúspešné stavy vrátane \texttt{unscored}, ktoré nie sú chybami vykonania. Neexistuje samostatné rozlíšenie chýb generovania, syntaxe, vykonania a nesprávnej odpovede.
+    \item \textbf{Zmiešané režimy.} Metriky sa počítajú zo všetkých záznamov v súbore \texttt{results.jsonl}. Ak súbor obsahuje výsledky oboch režimov, nie sú vyhodnotené samostatne.
+    \item \textbf{Závislosť od internej funkcie.} Porovnanie odpovedí využíva metódu \texttt{default\_compare()} triedy \texttt{Evaluator} z balíka \texttt{databench\_eval}, pričom objekt sa vytvára bez štandardnej inicializácie. Zmena v budúcej verzii balíka by mohla toto správanie ovplyvniť, preto je dôležité pripnúť jeho verziu.
+\end{itemize}
+
+\subsubsection*{Dáta, výstup a prostredie}
+
+\begin{itemize}
+    \item \textbf{Vývojové dáta.} Experimenty používajú konfiguráciu \texttt{qa} a rozdelenie \texttt{train}, teda slúžia na vývojovú kontrolu. Nejde o oficiálne vyhodnotenie na testovacích dátach súťaže.
+    \item \textbf{Chýbajúci súťažný výstup.} Súbory \texttt{predictions.txt} a \texttt{predictions\_lite.txt} v poradí otázok požadovanom benchmarkom nie sú implementované.
+    \item \textbf{Závislosť od externého API.} Dostupnosť služby Gemini ovplyvňuje priebeh experimentov. Pri testovaní sa vyskytla dočasná chyba \texttt{503 UNAVAILABLE}, ktorá nesúvisí s logikou riešenia. Opakovanie požiadavky pri takýchto chybách je potrebné ošetriť a otestovať.
+    \item \textbf{Reprodukovateľnosť prostredia.} Verzie knižníc nie sú pripnuté v súbore \texttt{requirements.txt} a v Docker obraze nie sú pripnuté verzie \texttt{pandas} a \texttt{pyarrow}.
+\end{itemize}
+
+\subsection{Zhrnutie obmedzení a plánovaných úprav}
+
+Tabuľka~\ref{tab:limits} prehľadne spája najdôležitejšie obmedzenia s ich možným dopadom a plánovanou úpravou.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Obmedzenia baseline a plánované úpravy}
+\label{tab:limits}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.2cm} >{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{4.6cm}@{}}
+\toprule
+\textbf{Obmedzenie} & \textbf{Možný dopad} & \textbf{Plánovaná úprava} \\
+\midrule
+Všeobecná informácia o chybe v druhom pokuse & menej cielená oprava kódu & odovzdať modelu štruktúrovaný traceback \\
+Prompt bez ukážok hodnôt & nesprávne filtre pri kategoriálnych stĺpcoch & experiment s pridaním ukážkových riadkov alebo hodnôt \\
+Accuracy iba z úspešných otázok & optimistický odhad presnosti & počítať Accuracy aj zo všetkých otázok \\
+Nerozlíšené stavy a režimy & neprehľadná analýza chýb & samostatné stavy a metriky pre \texttt{full} a \texttt{lite} \\
+Chýbajúce \texttt{predictions.txt} & nemožnosť odovzdať súťažný výstup & implementovať export oboch súborov \\
+Nedeterministické generovanie & ťažšie porovnanie experimentov & nastaviť teplotu a \texttt{seed} \\
+Zdieľaný \texttt{generated\_code.py} & nemožnosť paralelizácie & jedinečné dočasné súbory pre každé spustenie \\
+Nepripnuté verzie knižníc & ťažšia reprodukovateľnosť & \texttt{requirements.txt}, pripnutý Docker obraz \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Plán ďalšej etapy}
+
+V druhej etape projektu plánujeme postupovať v nasledujúcich krokoch. Poradie zohľadňuje, že najprv je potrebné zabezpečiť spoľahlivé meranie a až potom experimentovať so zlepšeniami.
+
+\paragraph{1. Úprava merania.} Pred porovnávaním variantov riešenia upravíme metriky tak, aby rozlišovali chyby generovania, syntaxe a vykonania, nesprávne odpovede a stav \texttt{unscored}, a aby sa režimy \texttt{full} a \texttt{lite} vyhodnocovali samostatne. Okrem súčasnej Accuracy bude uvedená aj hodnota zo všetkých otázok. Tým sa zabezpečí, že neskoršie zlepšenia bude možné posudzovať na spoľahlivom základe.
+
+\paragraph{2. Export predikcií.} Implementujeme export súborov \texttt{predictions.txt} a \texttt{predictions\_lite.txt} v poradí otázok podľa testovacieho súboru, aby bolo riešenie pripravené na oficiálne vyhodnotenie.
+
+\paragraph{3. Analýza chýb.} Nesprávne odpovede rozdelíme podľa typu odpovede (\texttt{boolean}, \texttt{number}, \texttt{category}, \texttt{list[category]}, \texttt{list[number]}) a podľa príčiny: nesprávny výber stĺpca, nesprávna interpretácia otázky, nesprávny formát výstupu alebo chyba vo výpočte. Z toho určíme, ktorým úpravám dať prednosť.
+
+\paragraph{4. Experimenty s promptom a opakovaním.} Porovnáme viacero verzií promptu, napríklad s ukážkovými riadkami a hodnotami kategoriálnych stĺpcov alebo s ukážkami riešení, a overíme vplyv štruktúrovaného tracebacku a väčšieho počtu opravných pokusov. Každá zmena sa bude testovať na rovnakej množine otázok a pri rovnakej konfigurácii.
+
+\paragraph{5. Porovnanie s priamym generovaním odpovede.} Ako doplnkový experiment porovnáme generovanie Python kódu s priamym generovaním odpovede jazykovým modelom bez vykonania kódu (pozri kapitolu~3.7).
+
+\paragraph{6. Vyhodnotenie na súťažných rozdeleniach.} Riešenie overíme aj na rozdeleniach \texttt{dev} a \texttt{test} konfigurácie \texttt{semeval}. Referenčné testovacie odpovede sa nebudú používať na priebežné ladenie promptov.
+
+\paragraph{7. Technická stabilita a reprodukovateľnosť.} Zavedieme jedinečné dočasné súbory pre každé spustenie, pripneme verzie knižníc a Docker obrazu, nastavíme teplotu a \texttt{seed} a ošetríme opakovanie požiadaviek pri dočasných chybách API.
+
+Poradie a rozsah týchto úprav sa môže zmeniť podľa výsledkov analýzy chýb. Úpravy, ktoré sa nepodarí vykonať v dostupnom čase, budú uvedené ako návrhy do budúcnosti.

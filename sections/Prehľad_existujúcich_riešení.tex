@@ -1,0 +1,122 @@
+\section{Prehľad existujúcich riešení a súvisiacich prác}
+
+\subsection{Pôvodná práca o DataBench}
+
+Základným zdrojom pre tento projekt je práca Osés Grijalba et al. (2024) s názvom \emph{Question Answering over Tabular Data with DataBench: A Large-Scale Empirical Evaluation of LLMs} \cite{databench2024}. Autori sa zaoberajú problémom hodnotenia jazykových modelov pri odpovedaní na otázky nad tabuľkovými dátami. Keďže existujúce benchmarky neposkytovali dostatočne rozmanité a rozsiahle dáta, autori vytvorili DataBench, ktorý v pôvodnej verzii obsahuje 65 tabuliek z rôznych oblastí a 1\,300 otázok s referenčnými odpoveďami.
+
+Autori porovnávali modely využívajúce generovanie kódu aj modely pracujúce priamo s otázkou a tabuľkou v kontexte. Výsledky ukázali, že oba prístupy majú svoje obmedzenia a že ani jednoduché otázky nemusia byť pre jazykové modely vždy triviálne. Táto práca je pre náš projekt dôležitá, pretože definuje riešenú úlohu, predstavuje použitý benchmark a poskytuje východisko na porovnávanie rôznych prístupov.
+
+\subsection{Hodnotiaci framework \texttt{databench\_eval}}
+
+Oficiálny repozitár \texttt{databench\_eval} poskytuje framework na experimentovanie a hodnotenie systémov určených na odpovedanie na otázky nad tabuľkovými dátami \cite{databencheval}. Jeho cieľom je zjednotiť základné časti experimentu: vytvorenie vstupného promptu z otázky a tabuľky, zavolanie modelu a vyhodnotenie vytvorenej odpovede.
+
+Framework umožňuje používať rôzne modely a experimentovať s rôznymi spôsobmi tvorby promptov bez nutnosti implementovať celý hodnotiaci proces od začiatku. Hodnotiaca funkcia je oddelená od samotného modelu, pretože spôsob posudzovania správnosti závisí aj od typu odpovede.
+
+Pre projekt je tento nástroj vhodný na reprodukovateľné vyhodnotenie baseline riešenia. Umožní nám porovnať predikcie s referenčnými odpoveďami a sledovať, ako sa mení úspešnosť pri úpravách spôsobu spracovania otázok.
+
+\subsection{Priame odpovedanie nad tabuľkou: TAPAS}
+
+Herzig et al. (2020) predstavili model TAPAS v práci \emph{TaPas: Weakly Supervised Table Parsing via Pre-training} \cite{tapas}. Tento prístup rieši odpovedanie na otázky nad tabuľkami bez potreby explicitne generovať SQL alebo inú formálnu reprezentáciu programu. Model založený na architektúre BERT vyberá relevantné bunky tabuľky a podľa potreby predikuje aj agregačnú operáciu.
+
+Výhodou TAPAS je priame prepojenie prirodzeného jazyka so štruktúrou tabuľky. Nevýhodou v kontexte nášho projektu je potreba vhodného predtrénovaného modelu a prispôsobenie jeho výstupov rôznym typom odpovedí v DataBench. Pri zložitých otázkach, ktoré vyžadujú rozsiahlejšie výpočty alebo viacero operácií, môže byť potrebné použiť iný prístup.
+
+TAPAS predstavuje vhodný referenčný prístup na porovnanie s riešením založeným na generovaní kódu. Pomáha tiež vysvetliť rozdiel medzi priamym výberom buniek a vykonávaním explicitne vytvorených operácií nad tabuľkou.
+
+\subsection{Text-to-SQL a sémantická analýza}
+
+Ďalším významným smerom je prevod otázok v prirodzenom jazyku na formálne databázové dotazy. Tento prístup sa označuje ako Text-to-SQL. Model najskôr interpretuje otázku a vytvorí SQL dotaz, ktorý sa následne vykoná nad databázou. Výsledok vykonania dotazu predstavuje odpoveď na otázku.
+
+Významným benchmarkom pre tento smer je Spider od Yu et al. (2018), ktorý obsahuje 10\,181 otázok a 5\,693 unikátnych SQL dotazov nad 200 databázami z rôznych oblastí \cite{spider}. Na rozdiel od jednoduchších benchmarkov Spider kladie dôraz na zovšeobecňovanie na nové databázové schémy a zložitejšie dotazy.
+
+Výhodou Text-to-SQL je možnosť presne definovať operácie, ako sú filtrovanie, zoskupovanie, agregácia a triedenie. Tento prístup je vhodný najmä vtedy, keď sú tabuľkové dáta uložené v relačnej databáze. Pri DataBench však treba zabezpečiť prevod tabuliek do vhodného databázového formátu a správne mapovanie názvov stĺpcov na SQL dotazy.
+
+Pre náš projekt predstavuje Text-to-SQL alternatívu ku generovaniu Python kódu. Oba prístupy vytvárajú vykonateľnú reprezentáciu požadovanej operácie, ale líšia sa použitým jazykom a prostredím vykonávania.
+
+\subsection{Generovanie Python kódu na zodpovedanie otázok}
+\label{subsec:python-code-generation}
+
+Ďalším prístupom k riešeniu úloh typu Table Question Answering (Table QA) je generovanie zdrojového kódu na základe otázky formulovanej v prirodzenom jazyku. Jazykový model namiesto priameho vytvorenia odpovede vygeneruje napríklad Python kód, ktorý následne spracuje tabuľkové údaje a vypočíta požadovaný výsledok. Takýto prístup umožňuje využívať operácie knižníc na spracovanie dát, ako sú filtrovanie riadkov, triedenie, agregácia hodnôt a výber jedinečných kategórií.
+
+Pri práci s tabuľkami uloženými vo formáte Parquet môže vygenerovaný kód využívať knižnicu \texttt{pandas} na načítanie údajov a ich ďalšie spracovanie. Výhodou tohto riešenia je, že samotný jazykový model nemusí vykonávať všetky výpočty priamo v texte odpovede. Namiesto toho vytvorí postup, ktorého výsledok možno vypočítať pomocou programového kódu. Príbuzný prístup využíva aj projekt \textit{Question Answering over Tabular Data with LLM Code Generation}, ktorý obsahuje implementáciu generovania kódu pre úlohy nad tabuľkovými dátami a podporuje experimenty s datasetom DataBench \cite{tabularqa}.
+
+Tento prístup však prináša aj určité riziká. Vygenerovaný kód môže obsahovať syntaktické chyby, používať nesprávne stĺpce alebo implementovať nesprávnu interpretáciu otázky. Preto je potrebné kontrolovať výsledok vykonania kódu, ošetriť prípadné výnimky a obmedziť prostredie, v ktorom sa kód vykonáva. Pri experimentoch je zároveň dôležité zaznamenávať chyby, aby bolo možné analyzovať príčiny nesprávnych odpovedí.
+
+Pre tento projekt je generovanie Python kódu vhodným prístupom, pretože umožňuje pracovať priamo s pôvodnými tabuľkovými údajmi a riešiť otázky vyžadujúce výpočty, triedenie alebo filtrovanie. Zároveň poskytuje jasne definovateľný postup, ktorý možno opakovane testovať a vyhodnocovať.
+
+\subsection{Porovnanie existujúcich prístupov}
+\label{subsec:comparison-approaches}
+
+Jednotlivé prístupy k úlohe Table QA sa líšia spôsobom, akým interpretujú otázku a získavajú odpoveď z tabuľkových údajov. Model TAPAS pracuje priamo s tabuľkou a vyberá relevantné bunky, prípadne používa agregačnú operáciu. Prístup Text-to-SQL prevádza otázku do formálneho databázového dotazu, ktorý sa následne vykoná nad databázou. Generovanie Python kódu namiesto toho umožňuje použiť všeobecné programovacie operácie na spracovanie dát. Pri priamom generovaní odpovede model vytvára výsledok bez samostatného vykonateľného programu.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Porovnanie prístupov k riešeniu úloh Table QA}
+    \label{tab:approaches-comparison}
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabularx}{\textwidth}{
+        >{\raggedright\arraybackslash}p{3cm}
+        >{\raggedright\arraybackslash}X
+        >{\raggedright\arraybackslash}X}
+        \toprule
+        \textbf{Prístup} &
+        \textbf{Princíp} &
+        \textbf{Výhody a obmedzenia} \\
+        \midrule
+        TAPAS &
+        Výber buniek tabuľky a prípadná agregácia &
+        Priama práca s tabuľkou; vyžaduje vhodný predtrénovaný
+        model a môže byť obmedzený typom úlohy. \\
+
+        Text-to-SQL &
+        Prevod otázky na SQL dotaz &
+        Vhodný na filtrovanie a agregácie v databázach;
+        vyžaduje správne vytvorený a vykonateľný dotaz. \\
+
+        Generovanie Python kódu &
+        Vytvorenie a vykonanie programu nad tabuľkou &
+        Flexibilné spracovanie dát; rizikom sú chyby
+        v kóde a potreba bezpečného vykonávania. \\
+
+        Priama odpoveď LLM &
+        Vygenerovanie odpovede v prirodzenom jazyku &
+        Jednoduchá implementácia; model môže nesprávne
+        interpretovať údaje alebo vytvoriť nepresný výsledok. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Pre tento projekt je dôležité nielen dosiahnuť správnu odpoveď, ale aj zabezpečiť reprodukovateľnosť experimentu. Pri priamom generovaní odpovede môže byť ťažšie určiť, ako model k výsledku dospel. Generovanie Python kódu poskytuje medzikrok, ktorý možno zaznamenať, skontrolovať a opätovne vykonať. Zároveň umožňuje pracovať priamo s tabuľkovými dátami pomocou knižnice \texttt{pandas} a riešiť nielen jednoduché vyhľadávanie hodnôt, ale aj filtrovanie, agregácie a rôzne výpočty. V porovnaní s prístupmi založenými na Text-to-SQL alebo špecializovaných tabuľkových modeloch je tento prístup jednoduchšie prispôsobiť konkrétnemu formátu datasetu DataBench.
+
+Nevýhodou generovania kódu je potreba bezpečne kontrolovať jeho vykonávanie a spracovávať prípadné chyby. Tento problém je v navrhovanom riešení riešený pomocou izolovaného sandboxu, v ktorom sa vygenerovaný kód vykonáva oddelene od hlavného systému. Na základe uvedených vlastností sme ako hlavný baseline zvolili prístup založený na generovaní Python kódu. Priame generovanie odpovede jazykovým modelom môže byť následne použité ako porovnávací variant.
+
+\subsection{Navrhovaný baseline}
+\label{subsec:baseline}
+
+Ako základné riešenie (baseline) plánujeme implementovať systém, v ktorom jazykový model generuje Python kód na zodpovedanie otázok nad tabuľkovými dátami. Tento prístup je v súlade s koncepciou systému \textit{Question Answering over Tabular Data with LLM Code  Generation}, ktorý využíva prevod otázok do Python kódu a jeho vykonanie nad tabuľkovými údajmi \cite{tabularqa}.
+
+Vstupom systému bude otázka z datasetu DataBench a identifikátor príslušnej tabuľky. Tabuľkové údaje sa načítajú zo súboru vo formáte Parquet pomocou knižnice \texttt{pandas}. Model dostane text otázky, názvy stĺpcov a podľa potreby aj informácie o dátových typoch. Na základe týchto informácií vytvorí Python kód, ktorý vypočíta požadovanú odpoveď.
+
+Navrhovaný postup bude pozostávať z nasledujúcich krokov:
+
+\begin{enumerate}
+    \item Načítanie otázky a identifikátora tabuľky z datasetu
+    DataBench.
+    \item Načítanie príslušnej tabuľky zo súboru Parquet.
+    \item Príprava promptu obsahujúceho otázku a schému tabuľky.
+    \item Generovanie Python kódu jazykovým modelom.
+    \item Kontrolované vykonanie vygenerovaného kódu nad
+    tabuľkovými údajmi.
+    \item Konverzia výsledku do požadovaného formátu odpovede.
+    \item Vyhodnotenie predikcie pomocou nástroja
+    \texttt{databench\_eval}.
+\end{enumerate}
+
+Osobitná pozornosť sa bude venovať formátu výstupu, pretože DataBench obsahuje rôzne typy odpovedí, napríklad booleovské hodnoty, kategórie, čísla a zoznamy hodnôt. Výsledok preto bude potrebné normalizovať tak, aby zodpovedal požiadavkám evaluačného nástroja. Ak sa pri generovaní alebo vykonávaní kódu vyskytne chyba, systém ju zaznamená a spracuje bez neoprávneného nahradenia výsledku správnou odpoveďou \cite{oseibrefo}.
+
+Na vyhodnotenie sa použije oficiálny framework \texttt{databench\_eval}, ktorý poskytuje infraštruktúru na spúšťanie modelov a vyhodnocovanie ich odpovedí. Na zabezpečenie porovnateľnosti budú jednotlivé varianty testované na rovnakej množine otázok a pri rovnakých podmienkach. Ako doplnkový experiment sa plánuje porovnať generovanie Python kódu s priamym generovaním odpovedí bez vykonávania kódu.
+
+Výsledky budú analyzované pomocou metrík podporovaných evaluačným frameworkom. Okrem celkovej úspešnosti bude užitočné zaznamenávať aj počet chýb pri generovaní a vykonávaní kódu. Takáto analýza pomôže identifikovať, či nesprávne odpovede vznikajú najmä pri interpretácii otázky, výbere stĺpcov, výpočte výsledku alebo konverzii výstupu.
+
+Keďže ide o plánovaný baseline, jeho skutočná úspešnosť a výpočtová náročnosť budú uvedené až po implementácii a vykonaní experimentov.
+

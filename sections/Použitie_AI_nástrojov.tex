@@ -1,0 +1,81 @@
+\section{Použitie AI nástrojov}
+
+V projekte sa vyskytujú dva odlišné spôsoby použitia umelej inteligencie. Prvým je jazykový model Gemini, ktorý je súčasťou samotného riešenia. Druhým sú AI asistenti, ktoré členovia tímu využívali ako pomocný nástroj pri vývoji a tvorbe dokumentácie. Obe oblasti sú nižšie opísané samostatne, aby bolo zrejmé, ktoré výsledky pochádzajú z behu systému a ktoré texty vznikli s podporou AI asistentov.
+
+\subsection{Gemini ako súčasť systému}
+
+Jazykový model \texttt{gemini-3.5-flash-lite} (Google Gemini API) nie je pomocným nástrojom vývoja. Je to funkčná súčasť implementovaného baseline: pre každú otázku generuje Python kód, ktorý sa následne vykoná v izolovanom prostredí a jeho výsledok sa vyhodnotí. Konfigurácia modelu je uvedená v tabuľke~\ref{tab:repro} a postup spracovania v kapitole~4.
+
+Zloženie promptu určuje funkcia \texttt{build\_prompt()} v súbore \texttt{prompt\_builder.py}. Prompt obsahuje otázku, schému tabuľky, očakávaný typ odpovede a pravidlá pre výstup, napríklad:
+
+\begin{quote}
+\small\itshape
+You are a Python data analysis assistant. A pandas DataFrame named df is already loaded. [\ldots] Store the final answer in a variable named result. [\ldots] Return only executable Python code, without explanations or markdown.
+\end{quote}
+
+Vygenerovaný kód, predikcia a počet pokusov sa pre každú otázku ukladajú do súboru \texttt{results.jsonl}. Činnosť Gemini je teda priamo súčasťou meraných výsledkov a nie je skrytou pomocou pri vývoji.
+
+\subsection{AI nástroje použité pri vývoji a dokumentácii}
+
+Pri vývoji a písaní dokumentácie boli AI nástroje využívané iba ako pomocný nástroj. Prehľad použitých nástrojov a účelu ich použitia je v tabuľke~\ref{tab:ai-tools}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Prehľad AI nástrojov použitých pri vývoji a dokumentácii}
+\label{tab:ai-tools}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}p{5.4cm}@{}}
+\toprule
+\textbf{Nástroj} & \textbf{Účel použitia} & \textbf{Typ výstupu} \\
+\midrule
+ChatGPT & vysvetlenie technických konceptov, pomoc pri pochopení vlastného kódu, konzultácia možných spôsobov implementácie a štruktúry riešenia, jazyková kontrola textu, pomoc pri organizácii dokumentácie & vysvetlenia, návrhy štruktúry, jazykové úpravy textu \\
+Claude (Anthropic) & kontrola súladu dokumentácie s kódom projektu, identifikácia nedostatkov dokumentácie, pomoc pri analýze chybového výpisu, formulácia a formátovanie vybraných častí textu v \LaTeX{}u (konfigurácia experimentov, táto kapitola) & zoznam pripomienok k dokumentácii, diagnóza chyby, návrhy textu \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Využitie AI asistentov zahŕňalo najmä:
+
+\begin{itemize}
+    \item vysvetlenie vybraných technických konceptov súvisiacich s riešením,
+    \item pomoc pri analýze a pochopení častí vlastného kódu,
+    \item konzultáciu možných spôsobov implementácie a štruktúry riešenia,
+    \item kontrolu súladu dokumentácie s implementáciou,
+    \item pomoc pri hľadaní príčin chýb počas programovania,
+    \item kontrolu a zlepšenie formulácie textu v projektovej dokumentácii,
+    \item pomoc pri organizácii a štruktúrovaní jednotlivých častí dokumentácie.
+\end{itemize}
+
+\subsection{Ukážky použitia asistenta Claude}
+
+Nižšie sú uvedené príklady použitia asistenta Claude, pri ktorých máme záznam rozhovoru. Prompty boli pôvodne napísané v ukrajinčine, v texte sú preložené do slovenčiny. Výstupy sú zhrnuté, nie citované celé.
+
+\paragraph{Príklad 1 -- porovnanie dokumentácie s riešením (Claude).}
+\emph{Prompt:} Po nahraní PDF dokumentácie: „Máme takúto dokumentáciu. Je jej gramatika správna?“\\
+\emph{Výstup:} Zoznam nedostatkov, napríklad prázdna tabuľka výsledkov, neplatný odkaz \texttt{[?]} v kapitole~3.1, chýbajúci presný identifikátor modelu a príliš stručná kapitola o AI nástrojoch.\\
+\emph{Použitie tímom:} Pripomienky sme posúdili a zapracovali do tejto verzie dokumentu.
+
+\paragraph{Príklad 2 -- formulácia dokumentácie (Claude).}
+\emph{Prompt:} „Pridajte presný názov modelu, teplotu, verziu promptu a verzie knižníc.“\\
+\emph{Výstup:} Návrh textu kapitoly o reprodukovateľnosti a tabuľky konfigurácie. Hodnoty asistent prevzal zo zdrojového kódu a uviedol, že teplota nie je nastavená, a preto sa nemá uvádzať ako nulová.\\
+\emph{Použitie tímom:} Hodnoty sme porovnali s kódom a chýbajúce údaje (verzie knižníc) doplnili členovia tímu.
+
+\paragraph{Príklad 3 -- analýza chyby pri programovaní (GPT).}
+\emph{Prompt:} Vložený výpis chyby z terminálu (\texttt{503 UNAVAILABLE}, \emph{This model is currently experiencing high demand}) so slovami „znova vznikla chyba, pomoc s testovaním“.\\
+\emph{Výstup:} Asistent určil, že chyba nevzniká v logike projektu, ale z dôvodu dočasného preťaženia serverov modelu. Zároveň upozornil na dva problémy v kóde. Funkcia \texttt{generate\_code()} opakovala požiadavku iba pri chybe 429, takže pri chybe 503 by spracovanie otázky skončilo hneď. Testovacie volanie API bolo v súbore \texttt{llm\_client.py} mimo bloku \texttt{if \_\_name\_\_ == "\_\_main\_\_"}, a preto by sa vykonávalo pri každom importe modulu. Navrhol rozšíriť opakovanie o chyby 503 a \texttt{UNAVAILABLE} a pripravil unit test s nahradeným klientom, ktorý nevyžaduje sieť.\\
+\emph{Použitie tímom:} Návrh sme posúdili ako podklad na úpravu kódu. Diagnózu je možné overiť z priloženého výpisu chyby.
+
+\paragraph{Príklad 4 -- Pomoc pri testovaní baselinu (GPT).}
+\emph{Prompt:} Popis fungovania projektu a žiadosť o vyznačenie rizikových miest, ktoré je potrebné otestovať\\
+\emph{Výstup:} Popis rizikových miest a podrobných postupov ich testovania \\
+\emph{Použitie tímom:} Identifikácia kritických miest a testovanie sa vykonali pomocou Chat GPT.
+
+\paragraph{Príklad 5 -- Hodnotenie výsledkov testovania (GPT).}
+\emph{Prompt:} Popis získaných výsledkov testovania. Prosím, ohodnoťte ich a navrhnite, ako by sa dali zlepšiť.\\
+\emph{Výstup:} Hodnotenie výsledkov ako dobré a poskytnutie niekoľkých návrhov na vylepšenie kódu s cieľom dosiahnuť lepšie výsledky \\
+\emph{Použitie tímom:} Presvedčenie o dobrých výsledkoch a pochopenie smeru zlepšovania kódu v druhej fáze.
+
+AI nástroje neboli použité na automatické vytvorenie kompletného riešenia ani na nahradenie vlastnej implementácie. Návrh riešenia, písanie a úprava zdrojového kódu, spúšťanie experimentov a interpretácia výsledkov zostali zodpovednosťou členov tímu. Texty a návrhy získané od AI asistentov boli pred zapracovaním porovnané so skutočnou implementáciou a upravené tak, aby zodpovedali stavu projektu. Merané výsledky pochádzajú z behu systému, nie z odpovedí AI asistentov.
+
+AI nástroje boli teda využívané predovšetkým ako konzultačná a jazyková pomôcka, nie ako samostatný autor výsledného riešenia.

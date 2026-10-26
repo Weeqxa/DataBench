@@ -1,0 +1,9 @@
+\section*{Záver}
+
+Cieľom projektu bolo preskúmať možnosti odpovedania na otázky nad tabuľkovými dátami s využitím datasetu DataBench a navrhnúť reprodukovateľné riešenie, ktoré umožňuje automaticky vytvoriť odpoveď na základe zadanej otázky a príslušnej tabuľky. V rámci práce bol analyzovaný dataset DataBench, jeho štruktúra, typy otázok a požiadavky na vyhodnocovanie výsledkov.
+
+V teoretickej časti boli preskúmané viaceré možnosti riešenia úlohy, vrátane špecializovaných modelov pre tabuľkové otázky, prístupu Text-to-SQL a generovania Python kódu. Na základe porovnania jednotlivých prístupov bol ako hlavný baseline zvolený prístup založený na generovaní Python kódu. Jeho výhodou je možnosť priamej práce s tabuľkovými dátami, riešenie rôznych typov operácií a zároveň možnosť zaznamenať a kontrolovať medzikrok medzi otázkou a výslednou odpoveďou.
+
+V praktickej časti bol implementovaný pipeline, ktorý načíta otázku a príslušnú tabuľku, vytvorí prompt pre jazykový model, vygeneruje Python kód a následne ho vykoná v izolovanom prostredí. Výsledok vykonaného kódu je následne spracovaný do požadovaného formátu a môže byť vyhodnotený pomocou metrík definovaných pre dataset DataBench. Súčasťou riešenia je aj spracovanie chýb pri generovaní alebo vykonávaní kódu.
+
+Navrhnuté riešenie vytvára základ pre ďalšie experimentovanie s rôznymi jazykovými modelmi, promptami a spôsobmi generovania odpovedí. V ďalšej fáze projektu bude možné porovnať výsledky hlavného baseline s priamym generovaním odpovedí a analyzovať najčastejšie typy chýb. Získané výsledky môžu zároveň ukázať, pri ktorých typoch otázok je generovanie kódu vhodnejšie a kde sú potrebné ďalšie úpravy alebo alternatívne prístupy.

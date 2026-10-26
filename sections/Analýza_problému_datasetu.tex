@@ -1,0 +1,158 @@
+\section{Analýza problému a datasetu DataBench}
+
+\subsection{Analýza riešeného problému}
+
+Projekt sa zaoberá automatickým odpovedaním na otázky formulované v prirodzenom jazyku na základe štruktúrovaných tabuľkových dát. Táto úloha patrí do oblasti spracovania prirodzeného jazyka (NLP) a vyžaduje kombináciu porozumenia textu, analýzy dát a logického uvažovania \cite{semeval}.
+
+Vstupom systému je otázka v prirodzenom jazyku a tabuľka obsahujúca relevantné údaje. Na základe otázky musí systém identifikovať potrebné stĺpce a riadky, správne interpretovať požadovanú operáciu a vytvoriť odpoveď, ktorá zodpovedá obsahu tabuľky. V závislosti od otázky môže byť potrebné vyhľadať konkrétnu hodnotu, porovnať údaje, vypočítať štatistiku alebo vytvoriť zoznam výsledkov.
+
+Hlavnou výzvou je zabezpečiť, aby systém správne porozumel otázke a zároveň vykonal potrebné operácie nad dátami. Nestačí teda iba generovať jazykovo správnu odpoveď. Odpoveď musí byť podložená informáciami z poskytnutej tabuľky. Systém by nemal dopĺňať informácie z externých zdrojov ani vytvárať hodnoty, ktoré z dostupných dát nevyplývajú \cite{semeval}.
+
+\subsection{Charakteristika datasetu DataBench}
+
+Na riešenie uvedeného problému sa používa dataset DataBench, ktorý je určený na hodnotenie schopnosti systémov odpovedať na otázky týkajúce sa tabuľkových dát \cite{semeval,hfdatabench}. Dataset poskytuje otázky a identifikátory príslušných datasetov, na základe ktorých možno určiť, s ktorou tabuľkou sa má pri odpovedaní pracovať.
+
+Testovacie dáta sú dostupné v archíve \texttt{competition\_databench.zip}. Archív obsahuje súbor \texttt{test\_qa.csv}, v ktorom sú uložené otázky a identifikátory zodpovedajúcich datasetov. Každému identifikátoru datasetu zodpovedá priečinok obsahujúci dva súbory:
+\begin{enumerate}
+    \item \texttt{all.parquet} -- kompletná verzia tabuľkových dát určená pre DataBench,
+    \item \texttt{sample.parquet} -- vzorka obsahujúca prvých 20 riadkov zodpovedajúcej tabuľky, určená pre DataBench Lite \cite{hfdatabench}.
+\end{enumerate}
+
+Dataset teda umožňuje skúmať odpovedanie na otázky nad kompletnými tabuľkami aj nad ich menšími vzorkami. Takéto rozdelenie poskytuje možnosť porovnať úspešnosť systému pri práci s rôznym množstvom dostupných dát.
+
+Okrem testovacích dát sú k dispozícii aj vývojové a tréningové dáta publikované na platforme Hugging Face v datasete \texttt{cardiffnlp/databench}. Tieto dáta možno využiť pri príprave a testovaní riešenia pred jeho konečným vyhodnotením \cite{hfdatabench}.
+
+\subsection{Typy otázok a očakávaných odpovedí}
+
+Podľa dokumentácie sú odpovede v DataBench rozdelené do piatich základných typov:
+\begin{enumerate}
+    \item \textbf{Boolean} -- odpoveď predstavuje logickú hodnotu, napríklad \texttt{True} alebo \texttt{False}. Akceptované sú aj ekvivalentné formy Yes/No a Y/N.
+    \item \textbf{Category} -- odpoveď tvorí kategória alebo hodnota získaná z bunky tabuľky, prípadne podreťazec jej obsahu.
+    \item \textbf{Number} -- odpoveď je číselná hodnota získaná z tabuľky alebo vypočítaná na základe dostupných údajov, napríklad pri výpočte priemeru, maxima alebo minima.
+    \item \textbf{List[category]} -- odpoveď obsahuje zoznam kategórií. Pri tvorbe odpovede je potrebné zohľadniť, či otázka vyžaduje jedinečné hodnoty alebo povoľuje opakovanie.
+    \item \textbf{List[number]} -- odpoveď obsahuje zoznam číselných hodnôt získaných z tabuľky alebo výpočtom.
+\end{enumerate}
+
+Správne určenie typu očakávanej odpovede je dôležitou súčasťou riešenia. Pomáha zvoliť vhodný postup spracovania otázky a zabezpečiť, aby výsledok mal požadovaný formát. Pri vyhodnocovaní sa poradie prvkov v zoznamových odpovediach nepovažuje za rozhodujúce \cite{hfdatabench,databencheval}.
+
+\subsection{Obmedzenia a spôsob vyhodnocovania}
+
+Pri práci s datasetom je potrebné dodržiavať pravidlo, podľa ktorého sa odpovede musia zakladať výlučne na poskytnutých tabuľkových dátach. Používanie externých dátových zdrojov na získanie odpovedí nie je povolené. Toto obmedzenie umožňuje hodnotiť schopnosť systému pracovať priamo s dostupnými údajmi.
+
+Výsledky sa vyhodnocujú pomocou automatizovaného hodnotiaceho nástroja založeného na balíku \texttt{databench\_eval}. Predikcie systému sa porovnávajú s referenčnými odpoveďami. Hodnotiaca funkcia akceptuje aj niektoré odlišnosti vo formátovaní, aby sa znížil vplyv drobných formálnych chýb na výsledné hodnotenie \cite{hfdatabench}.
+
+Výstup riešenia musí obsahovať dva súbory: \texttt{predictions.txt} pre kompletné tabuľky DataBench a \texttt{predictions\_lite.txt} pre vzorky DataBench Lite. Každý riadok obsahuje jednu odpoveď v rovnakom poradí, v akom sú otázky uvedené v testovacom súbore \cite{hfdatabench,databencheval}.
+
+Z pohľadu projektu bude dôležité sledovať presnosť odpovedí a analyzovať typy chýb, ktoré vznikajú pri interpretácii otázok, výbere údajov alebo vykonávaní výpočtov. Tieto zistenia budú slúžiť ako východisko pre návrh a implementáciu základného riešenia (baseline) a pre následné experimenty v druhej etape projektu.
+
+\subsection{Podrobná štruktúra datasetu}
+
+Cieľom datasetu DataBench je umožniť systematické hodnotenie jazykových modelov pri odpovedaní na otázky nad tabuľkovými dátami. Obsahuje tabuľky z rôznych tematických oblastí a otázky vytvorené na základe ich obsahu \cite{semeval}.
+
+Aktuálna verzia datasetu na platforme Hugging Face obsahuje 80 tabuliek a 1\,822 otázok. Celkový počet riadkov v zdrojových tabuľkách je 3\,708\,884 a počet stĺpcov je 2\,006 \cite{hfdatabench}. Tieto údaje sa týkajú aktuálnej verzie repozitára a nemali by sa zamieňať s pôvodnou verziou benchmarku z roku 2024, ktorá obsahovala 65 tabuliek a 1\,300 otázok.
+
+\begin{table}[htbp]
+\centering
+\caption{Základné charakteristiky datasetu DataBench}
+\label{tab:basic}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{6cm} X@{}}
+\toprule
+\textbf{Charakteristika} & \textbf{Popis} \\
+\midrule
+Názov datasetu & DataBench \\
+Hlavná úloha & Odpovedanie na otázky nad tabuľkovými dátami \\
+Počet tabuliek v aktuálnej verzii & 80 \\
+Počet otázok v aktuálnej verzii & 1\,822 \\
+Celkový počet riadkov zdrojových tabuliek & 3\,708\,884 \\
+Celkový počet stĺpcov zdrojových tabuliek & 2\,006 \\
+Formát dát & Parquet \\
+Jazyky uvedené v repozitári & Angličtina a španielčina \\
+Hlavné verzie tabuliek & Kompletné tabuľky (\texttt{all.parquet}) a vzorky (\texttt{sample.parquet}) \\
+Zdroj & Hugging Face -- \texttt{cardiffnlp/databench} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Každý záznam v časti datasetu určenej na otázky a odpovede obsahuje informácie potrebné na identifikáciu otázky, príslušnej tabuľky a správnej odpovede. V aktuálnej verzii repozitára sú v náhľade dostupné stĺpce uvedené v tabuľke~\ref{tab:structure} \cite{hfdatabench}.
+
+\begin{table}[htbp]
+\centering
+\caption{Štruktúra jednotlivých záznamov}
+\label{tab:structure}
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily\raggedright\arraybackslash}p{4cm} X@{}}
+\toprule
+\textbf{Stĺpec} & \textbf{Význam} \\
+\midrule
+question & Otázka formulovaná v prirodzenom jazyku \\
+answer & Referenčná odpoveď pre kompletnú tabuľku \\
+type & Typ očakávanej odpovede \\
+columns\_used & Názvy stĺpcov potrebných na zodpovedanie otázky \\
+column\_types & Dátové typy použitých stĺpcov \\
+sample\_answer & Referenčná odpoveď pre DataBench Lite \\
+dataset & Identifikátor tabuľky, napríklad \texttt{001\_Forbes} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Identifikátor v stĺpci \texttt{dataset} umožňuje načítať príslušnú tabuľku zo zodpovedajúceho priečinka. Stĺpec \texttt{answer} obsahuje odpoveď pre kompletnú tabuľku, zatiaľ čo \texttt{sample\_answer} predstavuje odpoveď pre vzorku obsahujúcu prvých 20 riadkov. Tieto odpovede sa môžu líšiť, pretože výpočty nad celou tabuľkou a nad jej vzorkou môžu viesť k odlišným výsledkom \cite{hfdatabench}.
+
+Zdrojové tabuľky sú uložené vo formáte Parquet. Súbor \texttt{all.parquet} obsahuje spracovanú kompletnú tabuľku a súbor \texttt{sample.parquet} jej zmenšenú verziu. Okrem toho repozitár obsahuje súbory s otázkami a doplňujúce informácie o jednotlivých tabuľkách.
+
+Pri práci s DataBench je potrebné rozlišovať medzi pôvodnou kolekciou otázok a rozdeleniami určenými pre súťaž SemEval 2025 Task 8. Podľa dokumentácie Hugging Face možno načítať konfiguráciu \texttt{qa} s rozdelením \texttt{train} a konfiguráciu \texttt{semeval} s rozdeleniami \texttt{train}, \texttt{dev} a \texttt{test} \cite{hfdatabench}.
+
+\begin{table}[htbp]
+\centering
+\caption{Dostupné konfigurácie a rozdelenia}
+\label{tab:configs}
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l >{\ttfamily}l X@{}}
+\toprule
+\textbf{Konfigurácia} & \textbf{Rozdelenie} & \textbf{Účel} \\
+\midrule
+qa      & train & Pôvodná kolekcia otázok a odpovedí \\
+semeval & train & Tréningové dáta súťaže \\
+semeval & dev   & Vývojové dáta na testovanie a ladenie riešenia \\
+semeval & test  & Testovacie otázky určené na konečné vyhodnotenie \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Počet otázok v každom rozdelení konfigurácie \texttt{semeval} je potrebné zistiť priamo načítaním príslušnej verzie datasetu. Počty 1\,300 a 1\,822 uvedené v literatúre predstavujú celkové počty otázok v rôznych verziách DataBench, nie počty otázok v jednotlivých súťažných rozdeleniach \cite{semeval,hfdatabench}.
+
+Pre reprodukovateľnosť experimentov je preto vhodné uviesť názov konfigurácie, názov rozdelenia a skutočný počet záznamov získaný pri načítaní datasetu.
+
+Nasledujúce príklady pochádzajú z náhľadu oficiálneho datasetu na Hugging Face. Uvádzané názvy stĺpcov predstavujú relevantnú časť tabuľky potrebnú na zodpovedanie otázky, nie úplný výpis všetkých jej riadkov.
+
+\paragraph{Príklad 1 -- odpoveď typu Boolean}
+\begin{itemize}
+    \item Identifikátor tabuľky: \texttt{001\_Forbes}
+    \item Otázka: \emph{Is the person with the highest net worth self-made?}
+    \item Použité stĺpce: \texttt{finalWorth}, \texttt{selfMade}
+    \item Typ odpovede: \texttt{boolean}
+    \item Správna odpoveď pre kompletnú tabuľku (\texttt{answer}): \texttt{True}
+    \item Odpoveď pre DataBench Lite (\texttt{sample\_answer}): \texttt{False}
+\end{itemize}
+Tento príklad ukazuje, že systém musí identifikovať osobu s najvyšším čistým majetkom a následne overiť hodnotu príslušného atribútu \texttt{selfMade}. Rozdiel medzi odpoveďami pre kompletnú tabuľku a vzorku ilustruje vplyv rozsahu dostupných dát.
+
+\paragraph{Príklad 2 -- číselná odpoveď}
+\begin{itemize}
+    \item Identifikátor tabuľky: \texttt{001\_Forbes}
+    \item Otázka: \emph{What is the age of the youngest billionaire?}
+    \item Použitý stĺpec: \texttt{age}
+    \item Typ odpovede: \texttt{number}
+    \item Správna odpoveď pre kompletnú tabuľku (\texttt{answer}): \texttt{19.0}
+    \item Odpoveď pre DataBench Lite (\texttt{sample\_answer}): \texttt{32.0}
+\end{itemize}
+Na zodpovedanie otázky je potrebné nájsť najnižšiu hodnotu veku v stĺpci \texttt{age}. Výsledok sa líši podľa toho, či systém pracuje s kompletnou tabuľkou alebo iba s prvými 20 riadkami.
+
+\paragraph{Príklad 3 -- zoznam kategórií}
+\begin{itemize}
+    \item Identifikátor tabuľky: \texttt{001\_Forbes}
+    \item Otázka: \emph{List the top 3 countries with the most billionaires.}
+    \item Použitý stĺpec: \texttt{country}
+    \item Typ odpovede: \texttt{list[category]}
+    \item Správna odpoveď pre kompletnú tabuľku (\texttt{answer}): \texttt{['United States', 'China', 'India']}
+    \item Odpoveď pre DataBench Lite (\texttt{sample\_answer}): \texttt{['United States', 'China', 'Brazil']}
+\end{itemize}
+Tento príklad vyžaduje spočítať počet miliardárov pre jednotlivé krajiny a vybrať tri krajiny s najvyšším počtom záznamov.
+
+Uvedené príklady ilustrujú tri odlišné typy odpovedí a rôzne operácie nad tabuľkovými dátami. Zároveň ukazujú, prečo je potrebné pri vyhodnocovaní presne rozlišovať medzi kompletnou verziou DataBench a jej zmenšenou verziou DataBench Lite.

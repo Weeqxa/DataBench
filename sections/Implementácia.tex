@@ -1,0 +1,263 @@
+\section{Implementácia navrhnutého riešenia}
+
+V tejto kapitole je opísaná implementácia základného riešenia pre odpovedanie
+na otázky nad tabuľkovými dátami z datasetu DataBench. Implementované riešenie
+využíva jazykový model Gemini na generovanie Python kódu, ktorý následne
+vykonáva požadovanú operáciu nad tabuľkovými dátami. Výsledok vykonania je
+normalizovaný a následne porovnaný s referenčnou odpoveďou pomocou nástroja
+\texttt{databench\_eval}.
+
+Implementácia je rozdelená do viacerých samostatných modulov. Každý modul
+zodpovedá za konkrétnu časť spracovania, čo umožňuje jednoduchšie testovanie
+a prípadné úpravy jednotlivých častí systému.
+
+Projekt je rozdelený do niekoľkých Python súborov. Hlavný priebeh programu
+zabezpečuje súbor \texttt{main.py}, ktorý spája jednotlivé komponenty do
+jedného procesu. Načítanie tabuliek zabezpečuje modul
+\texttt{dataset\_loader.py}, tvorbu promptu modul
+\texttt{prompt\_builder.py} a komunikáciu s jazykovým modelom modul
+\texttt{llm\_client.py}.
+
+Vykonávanie vygenerovaného kódu je oddelené do modulov
+\texttt{code\_executor.py} a \texttt{sandbox\_runner.py}. Modul
+\texttt{evaluator.py} zabezpečuje porovnanie výslednej odpovede s referenčnou
+odpoveďou a modul \texttt{metrics.py} vypočítava základné metriky z uložených
+výsledkov.
+
+\begin{verbatim}
+DataBench
+    |
+    v
+main.py
+    |
+    +--> dataset_loader.py
+    |       |
+    |       +--> all.parquet / sample.parquet
+    |
+    +--> prompt_builder.py
+    |       |
+    |       +--> vytvorenie promptu
+    |
+    +--> llm_client.py
+    |       |
+    |       +--> Gemini
+    |       |
+    |       +--> Python kód
+    |
+    +--> code_executor.py
+    |       |
+    |       +--> kontrola syntaxe
+    |       +--> Docker
+    |              |
+    |              +--> sandbox_runner.py
+    |
+    +--> evaluator.py
+    |       |
+    |       +--> porovnanie odpovede
+    |
+    +--> results.jsonl
+            |
+            +--> metrics.py
+\end{verbatim}
+
+Takéto rozdelenie umožňuje oddeliť načítanie dát, generovanie kódu, jeho
+vykonanie a vyhodnotenie výsledkov.
+
+\subsection{Načítanie otázok a tabuľkových dát}
+
+Hlavný program načítava otázky z datasetu DataBench pomocou knižnice
+\texttt{datasets}. V aktuálnej implementácii sa používa konfigurácia
+\texttt{qa} a split \texttt{train}. Každá otázka obsahuje okrem samotného
+textu otázky aj identifikátor tabuľky, typ očakávanej odpovede a referenčnú
+odpoveď.
+
+Pre každú otázku sa podľa identifikátora datasetu vyhľadá príslušná lokálna
+tabuľka vo formáte Parquet. Implementácia podporuje dva režimy spracovania.
+V režime \texttt{full} sa používa súbor \texttt{all.parquet}, ktorý obsahuje
+celú tabuľku. V režime \texttt{lite} sa používa súbor
+\texttt{sample.parquet}, ktorý predstavuje menšiu vzorku dát.
+
+Na načítanie tabuľky sa používa knižnica \texttt{pandas}. Po načítaní tabuľky
+sa pomocou funkcie \texttt{get\_table\_schema()} vytvorí schéma obsahujúca
+názvy jednotlivých stĺpcov a ich dátové typy. Táto informácia sa následne
+používa pri tvorbe promptu pre jazykový model.
+
+\subsection{Tvorba promptu a Generovanie Python kódu}
+
+Po načítaní otázky a tabuľky sa vytvorí prompt pomocou funkcie
+\texttt{build\_prompt()}. Prompt obsahuje samotnú otázku, zoznam dostupných
+stĺpcov, ich dátové typy a očakávaný typ odpovede.
+
+Dôležitou súčasťou promptu sú pravidlá pre generovanie výsledného Python
+kódu. Jazykový model dostáva informáciu, že objekt \texttt{df} obsahujúci
+tabuľku je už pripravený. Vygenerovaný program musí uložiť výsledok do
+premennej \texttt{result}.
+
+Prompt zároveň obsahuje pravidlá pre jednotlivé typy odpovedí. Podporované
+sú napríklad booleovské hodnoty, čísla, reťazce, kategórie a zoznamy
+kategórií alebo čísel. Týmto spôsobom sa znižuje riziko, že jazykový model
+vráti textové vysvetlenie namiesto požadovanej hodnoty.
+
+V prompte sú tiež uvedené pravidlá týkajúce sa spracovania duplicitných
+hodnôt, zoradenia výsledkov, číselných hodnôt a konverzie dátových typov.
+Model je zároveň upozornený, že nesmie používať stĺpce alebo hodnoty, ktoré
+nie sú súčasťou poskytnutej tabuľky.
+
+
+Na generovanie Python kódu sa používa model Gemini prostredníctvom knižnice
+\texttt{google-genai}. API kľúč je načítaný z environmentálnej premennej
+\texttt{GEMINI\_API\_KEY}, ktorá je uložená v súbore \texttt{.env}.
+
+Model dostane pripravený prompt a jeho úlohou je vytvoriť vykonateľný Python
+kód. Výstup modelu je následne upravený pomocou funkcie
+\texttt{clean\_generated\_code()}, ktorá odstraňuje prípadné Markdown
+ohraničenie kódu, napríklad bloky označené pomocou \texttt{```python}.
+
+Implementácia obsahuje aj opakovanie požiadavky pri dočasných chybách
+komunikácie s API. Pri chybách súvisiacich s prekročením limitu požiadaviek
+sa používa postupné predlžovanie času čakania medzi jednotlivými pokusmi.
+Maximálny počet pokusov komunikácie s modelom je nastavený na päť.
+
+Pred samotným vykonaním kódu sa kontroluje jeho syntaktická správnosť.
+Na tento účel sa používa modul \texttt{ast} a funkcia
+\texttt{ast.parse()}.
+
+Ak kód obsahuje syntaktickú chybu, nie je odoslaný na vykonanie. Systém
+zaznamená chybu a môže požiadať jazykový model o novú verziu kódu. V rámci
+spracovania jednej otázky sú povolené maximálne dve generovania kódu --
+prvotný pokus a jedna opakovaná generácia.
+
+Pri opakovanom pokuse je model informovaný o tom, že predchádzajúci
+vygenerovaný kód nebol úspešný. Do promptu sa vloží predchádzajúci kód
+a informácia o chybe, aby mohol model vytvoriť opravenú verziu.
+
+\subsection{Izolované vykonávanie Python kódu}
+
+Vygenerovaný Python kód sa nevykonáva priamo v hlavnom procese programu.
+Na jeho vykonanie sa používa Docker kontajner. Tento prístup umožňuje oddeliť
+vykonávanie kódu generovaného jazykovým modelom od hlavnej aplikácie.
+
+Kontajner sa spúšťa s viacerými obmedzeniami. Sieťová komunikácia je
+zakázaná pomocou parametra \texttt{--network none}. Kontajner má zároveň
+obmedzenú operačnú pamäť na 512 MB a využitie procesora na jeden CPU.
+Počet procesov je obmedzený pomocou parametra \texttt{--pids-limit}.
+
+Súborový systém kontajnera je nastavený ako iba na čítanie. Pre dočasné
+operácie je povolený samostatný adresár \texttt{/tmp}. Zároveň sú odstránené
+Linuxové capabilities pomocou \texttt{--cap-drop ALL} a je použitá možnosť
+\texttt{no-new-privileges}.
+
+Do kontajnera sa pripájajú iba potrebné súbory. Ide o príslušnú tabuľku
+\texttt{table.parquet}, súbor so vygenerovaným kódom
+\texttt{generated\_code.py} a súbor \texttt{sandbox\_runner.py}. Všetky
+tieto súbory sú pripojené v režime iba na čítanie.
+
+Samotné vykonanie je časovo obmedzené na 20 sekúnd. Ak program prekročí
+tento limit alebo Docker vráti chybu, vykonanie sa považuje za neúspešné.
+
+\subsection{Spracovanie výsledku v sandboxe}
+
+Po spustení kontajnera načíta súbor \texttt{sandbox\_runner.py} príslušnú
+tabuľku do objektu \texttt{df}. Vygenerovaný Python kód sa následne vykoná
+v priestore, v ktorom je objekt \texttt{df} dostupný.
+
+Po vykonaní kódu sa kontroluje, či vygenerovaný program vytvoril premennú
+\texttt{result}. Ak táto premenná neexistuje, vykonanie sa považuje za
+neúspešné.
+
+Výsledok sa následne normalizuje pomocou funkcie
+\texttt{normalize\_result()}. Táto funkcia konvertuje hodnoty z knižníc
+Pandas a NumPy na štandardné Python dátové typy, ktoré je možné serializovať
+do formátu JSON. Podporované sú napríklad skalárne hodnoty, zoznamy,
+slovníky a hodnoty získané z objektov \texttt{Series} alebo
+\texttt{ndarray}.
+
+Takto pripravený výsledok je následne odoslaný späť do hlavného programu
+vo forme JSON. Hlavný program ho dekóduje a používa ako predikovanú odpoveď
+na danú otázku.
+
+\subsection{Opakovanie po chybe vykonávania}
+
+Ak sa vygenerovaný kód nepodarí vykonať v Docker kontajneri, systém sa
+pokúsi vytvoriť nový kód. Maximálne sú teda použité dva pokusy v rámci
+spracovania jednej otázky.
+
+Pri druhom pokuse sa do promptu pridá informácia o predchádzajúcom
+neúspešnom vykonaní a predchádzajúci vygenerovaný kód. Jazykový model je
+požiadaný o vytvorenie opravenej verzie.
+
+Aktuálna implementácia používa pri chybe Dockeru všeobecnú informáciu
+o neúspešnom vykonaní. Konkrétny traceback z Docker kontajnera sa síce
+vypíše do konzoly, ale ešte nie je štruktúrovane odovzdaný späť jazykovému
+modelu.
+
+\subsection{Vyhodnotenie odpovede}
+
+Po úspešnom vykonaní Python kódu sa získaná hodnota porovná s referenčnou
+odpoveďou. Na tento účel sa používa trieda \texttt{Evaluator} z balíka
+\texttt{databench\_eval}.
+
+Funkcia \texttt{evaluate\_answer()} využíva porovnávaciu funkciu
+\texttt{default\_compare()}, ktorá zohľadňuje aj typ odpovede. Výsledkom
+porovnania je logická hodnota určujúca, či sa predikovaná odpoveď považuje
+za správnu.
+
+V režime \texttt{full} sa ako referenčná odpoveď používa hodnota
+\texttt{answer}. V režime \texttt{lite} sa používa hodnota
+\texttt{sample\_answer}. V prípade, že referenčná odpoveď chýba, otázka
+sa označí stavom \texttt{unscored} a nepovažuje sa za úspešne vyhodnotenú.
+
+\subsection{Ukladanie výsledkov}
+
+Výsledky jednotlivých otázok sa ukladajú do súboru
+\texttt{results.jsonl}. Každý riadok obsahuje jeden JSON objekt.
+
+Medzi ukladané informácie patria napríklad index otázky, identifikátor
+tabuľky, režim spracovania, samotná otázka, typ odpovede, očakávaná
+odpoveď, predikovaná odpoveď, informácia o správnosti, stav spracovania,
+chybová správa, vygenerovaný kód a počet pokusov.
+
+Takéto uloženie umožňuje neskoršie analyzovať jednotlivé výsledky bez
+potreby opätovného spúšťania jazykového modelu.
+
+\subsection{Režimy spustenia programu}
+
+Program \texttt{main.py} podporuje dva režimy spracovania otázok:
+\texttt{single} a \texttt{batch}.
+
+Režim \texttt{single} umožňuje vybrať jednu otázku podľa jej indexu.
+Tento režim je vhodný najmä na manuálne overovanie správania systému,
+promptu a generovaného kódu.
+
+Režim \texttt{batch} umožňuje spracovať súvislý rozsah otázok. Používateľ
+zadá počiatočný index a počet otázok. Program následne postupne spracuje
+jednotlivé otázky a priebežne ukladá ich výsledky do súboru
+\texttt{results.jsonl}.
+
+Oba režimy podporujú režim dát \texttt{full} a \texttt{lite}. Týmto
+spôsobom je možné experimentálne porovnať spracovanie úplných tabuliek
+a menších vzoriek.
+
+\subsection{Testovanie implementácie}
+
+Súčasťou projektu sú aj testovacie skripty, ktoré overujú jednotlivé časti
+implementácie. Testovanie zahŕňa napríklad kontrolu načítania lokálnych
+tabuliek, správanie evaluátora, spracovanie chýb Docker kontajnera a
+správanie opakovania po chybe.
+
+Pre kontrolu syntaktickej správnosti Python súborov je možné použiť
+modul \texttt{py\_compile}. Samostatný test
+\texttt{test\_retry.py} je implementovaný ako štandardný
+\texttt{unittest} test pre kontrolu opakovania po neúspešnom vykonaní.
+Ostatné testovacie súbory sú v aktuálnej verzii projektu pripravené
+predovšetkým ako manuálne validačné skripty.
+
+Implementované riešenie realizuje základný baseline založený na generovaní
+Python kódu jazykovým modelom. Celý proces pozostáva z načítania otázky
+a tabuľky, vytvorenia schémy a promptu, generovania Python kódu, kontroly
+jeho syntaxe, izolovaného vykonania v Docker kontajneri, normalizácie
+výsledku a jeho porovnania s referenčnou odpoveďou.
+
+Navrhnutá architektúra zároveň umožňuje zaznamenávať výsledky a chyby
+jednotlivých otázok. To poskytuje základ pre experimentálne vyhodnotenie
+baseline a pre ďalšie rozšírenia projektu v nasledujúcej etape.

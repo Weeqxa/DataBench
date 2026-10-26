@@ -1,0 +1,169 @@
+\documentclass[12pt,a4paper]{article}
+
+% ---------- Kódovanie a jazyk ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[slovak]{babel}
+\usepackage{lmodern}
+\usepackage{keyval}
+\usepackage[patches={}]{microtype}
+
+% ---------- Rozloženie strany ----------
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% ---------- Zoznamy, tabuľky, odkazy ----------
+\usepackage{enumitem}
+\setlist{itemsep=2pt, topsep=4pt}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf, skip=6pt}
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\large\bfseries}{\thesubsection}{0.6em}{}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\urlstyle{same}
+
+\begin{document}
+
+% TITULNÁ STRANA
+
+\begin{titlepage}
+    \thispagestyle{empty}
+
+    % Univerzita a fakulta
+    \begin{center}
+        \vspace*{1cm}
+
+        {\normalsize Technická univerzita v Košiciach\par}
+        \vspace{0.2cm}
+        {\normalsize Fakulta elektrotechniky a informatiky\par}
+        \vspace{0.2cm}
+        {\normalsize Predmet: Spracovanie prirodzeneho jazyka\par}
+
+        % Názov práce
+        \vspace{4cm}
+
+        {\LARGE\bfseries
+        Odpovedanie na otázky nad tabuľkovými dátami\par}
+
+        \vspace{0.4cm}
+
+        {\Large s využitím datasetu DataBench\par}
+
+        \vspace{0.5cm}
+
+    \end{center}
+
+    % Autori a študijný program
+    \vfill
+
+    \begin{flushleft}
+        \textbf{Autori:}\\
+        Volodymyr Ihnatov\\
+        Artem Marynov\\
+        Ruslan Savka\\
+        Kostiantyn Ostrovskyi
+
+        \vspace{0.5cm}
+
+        \textbf{Študijný program:}\\
+        Umelá inteligencia
+    \end{flushleft}
+
+    % Miesto a rok
+    \vspace{2cm}
+
+    \begin{center}
+        Košice, 2026
+    \end{center}
+
+\end{titlepage}
+
+
+% OBSAH
+
+\tableofcontents
+\newpage
+
+% JEDNOTLIVÉ KAPITOLY
+
+\input{sections/Úvod_a_cieľ}
+
+\input{sections/Analýza_problému_datasetu}
+
+\input{sections/Prehľad_existujúcich_riešení}
+
+\input{sections/Implementácia}
+
+\input{sections/Metodológia_metriky}
+
+\input{sections/Plán_ďalšej_etapy}
+
+\input{sections/Použitie_AI_nástrojov}
+
+\input{sections/Záver}
+
+% ZOZNAM POUŽITEJ LITERATÚRY
+
+
+\begin{thebibliography}{9}
+
+\bibitem{semeval}
+SemEval-2025 Task 8: Question Answering over Tabular Data.
+\newblock \url{https://aclanthology.org/2025.semeval-1.324/}
+
+\bibitem{hfdatabench}
+Hugging Face: \texttt{cardiffnlp/databench}.
+\newblock \url{https://huggingface.co/datasets/cardiffnlp/databench}
+
+\bibitem{databencheval}
+\texttt{databench\_eval}: Evaluation framework for DataBench.
+\newblock \url{https://github.com/jorses/databench_eval}
+
+\bibitem{databench2024}
+Osés Grijalba, J. et al. (2024).
+Question Answering over Tabular Data with DataBench:
+A Large-Scale Empirical Evaluation of LLMs.
+In \emph{LREC-COLING 2024}.
+\newblock \url{https://aclanthology.org/2024.lrec-main.1179/}
+
+\bibitem{tapas}
+Herzig, J. et al. (2020).
+TaPas: Weakly Supervised Table Parsing via Pre-training.
+In \emph{ACL 2020}.
+\newblock \url{https://aclanthology.org/2020.acl-main.398/}
+
+\bibitem{spider}
+Yu, T. et al. (2018).
+Spider: A Large-Scale Human-Labeled Dataset for Complex
+and Cross-Domain Semantic Parsing and Text-to-SQL Task.
+In \emph{EMNLP 2018}.
+\newblock \url{https://aclanthology.org/D18-1425/}
+
+\bibitem{tabularqa}
+Evangelatos, A. et al.
+Question Answering over Tabular Data with LLM Code Generation.
+GitHub repository: \texttt{tabularqa}.
+\newblock \url{https://github.com/andrewevag/tabularqa}
+
+\bibitem{oseibrefo}
+Osei-Brefo, E., Liang, H. (2025).
+OseiBrefo-Liang at SemEval-2025 Task 8:
+A Multi-Agent LLM Code Generation Approach for Answering Tabular Questions.
+In \emph{Proceedings of the 19th International Workshop on Semantic Evaluation (SemEval-2025)}.
+\newblock \url{https://aclanthology.org/2025.semeval-1.49/}
+
+\end{thebibliography}
+
+\end{document}
+```
