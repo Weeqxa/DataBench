@@ -1,24 +1,147 @@
-
-# Secrets
+# Secrets and local credentials (templates may be committed)
 .env
 .env.*
+!.env.example
+!.env.template
+.secrets/
+.aws/
+.ssh/
+*.key
+*.pem
+*.p12
+*.pfx
+/credentials.json
+/credentials-*.json
+/service-account*.json
+/*-service-account.json
 
-# Python
+# Python environments and compiled files
 .venv/
+venv/
+env/
+ENV/
+__pypackages__/
 __pycache__/
 *.py[cod]
+*.pyd
 
-# Cache
+# Python packaging outputs
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+*.whl
+pip-wheel-metadata/
+
+# Tool caches and test/coverage outputs
 .cache/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.tox/
+.nox/
+.ipynb_checkpoints/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
 
-# Local datasets
-data/*
-!data/.gitkeep
+# Downloaded datasets and competition archives
+/data/*
+!/data/.gitkeep
+/competition_databench*.zip
+/competition_databench*/
 
-# Generated files and local results
+# Local experiment state (the reviewed stage-one snapshot is allowed below)
+/state/*
 generated_code.py
-results.jsonl
+test_generated_code.py
+results*.jsonl
+predictions*.txt
+.evaluation.lock
+logs/
+*.log
 
-# IDE
+# Temporary files and editor backups
+/tmp/
+/temp/
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*~
+.*.swp
+.*.swo
+
+# LaTeX build outputs; retain .tex sources and other PDF assets
+/main.pdf
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.dvi
+
+# Local IDE settings
 .vscode/
+.idea/
+.vs/
+*.iml
+
+# Operating-system metadata
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Personal assistant notes and local documentation drafts
+HANDOFF.md
+representative_examples.md
+smoke_review.md
+*.local.md
+*.private.md
+*.personal.md
+/notes/
+/.notes/
+/personal/
+/scratch/
+
+# Reviewed stage-one snapshot needed for evaluation and reproducibility
+!/state/eval_stage1/
+/state/eval_stage1/*
+!/state/eval_stage1/config.json
+!/state/eval_stage1/execution_environment.json
+!/state/eval_stage1/selected_qa.json
+!/state/eval_stage1/excluded_questions.json
+!/state/eval_stage1/results_full.jsonl
+!/state/eval_stage1/results_lite.jsonl
+!/state/eval_stage1/error_reviews.json
+!/state/eval_stage1/verification.json
+!/state/eval_stage1/scores/
+/state/eval_stage1/scores/*
+!/state/eval_stage1/scores/decisions_full.json
+!/state/eval_stage1/scores/decisions_lite.json
+!/state/eval_stage1/scores/errors.csv
+!/state/eval_stage1/scores/errors.json
+!/state/eval_stage1/scores/metrics.json
+!/state/eval_stage1/scores/predictions.txt
+!/state/eval_stage1/scores/predictions_lite.txt
+!/state/eval_stage1/scores/report.md

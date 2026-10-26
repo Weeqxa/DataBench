@@ -1,0 +1,100 @@
+True
+299
+Insurance
+[1, 0, 0, 1, 1]
+[1, 2, 3, 4, 5, 6, 7]
+True
+1
+Marathon (Mix Cut) - Simon O'Shine Mix
+['Western Europe', 'Southeast Asia', 'Sub-Saharan Africa']
+[288, 281, 260, 258, 224]
+True
+18.0
+__DATABENCH_NO_PREDICTION__
+['Alex Gendler', 'Iseult Gillespie', 'Emma Bryce']
+[10, 10, 10]
+True
+27
+General
+['CA', 'TX', 'FL', 'AZ']
+[1.0, 1.0, 1.0]
+True
+1904
+no code data science
+['octopus', 'scorpion', 'crayfish']
+[5.0, 5.0, 5.0]
+True
+0.7493706045
+Mortgage Banker
+['LIFE', 'New Options Project']
+[1998, 2009, 2010, 2007, 2002]
+False
+4
+Coffee
+['Credit card', 'Credit card', 'Ewallet']
+[80.0, 80.0, 80.0, 80.0, 79.55]
+False
+199496.34
+7
+['yes', 'no']
+[3, 10, 14, 16, 18]
+True
+812960107.83
+Armenia
+__DATABENCH_NO_PREDICTION__
+[5000000, 4000006, 3500000]
+False
+1315
+Wood
+['affection', 'achievement', 'enjoy_the_moment', 'bonding']
+[0.0, 0.0]
+True
+340
+7
+['1882-09-23 00:00:00+00:00', '2007-04-15 00:00:00+00:00', '1977-11-08 00:00:00+00:00', '1903-10-09 00:00:00+00:00', '2021-09-01 00:00:00+00:00']
+[158, 116, 114, 94, 80, 72]
+True
+1206
+1
+['ST', 'LVH', 'Normal']
+[589793, 589750, 557779, 539249, 476457, 376626]
+True
+22.0
+Wise
+['Central', 'Northern', 'Mission', 'Southern']
+[9667, 6883, 5578, 4026, 5500, 1160]
+False
+0
+Robert Tait McKenzie
+['Water', 'Normal']
+[18, 18, 18]
+False
+1184
+David McCandless
+['accounting', 'hr', 'technical']
+[2017, 2018, 2016]
+False
+18484
+COMMUNITY BANK & TRUST
+['Formula Rossa', 'Kingda Ka', 'Top Thrill Dragster']
+[0.891806662, 0.861874342, 0.861330688]
+False
+249
+Credit card
+['Eastern Time (US & Canada)', 'Central Time (US & Canada)', 'Pacific Time (US & Canada)']
+[2012, 2011, 2010, 2009]
+True
+28
+__DATABENCH_NO_PREDICTION__
+['United States', 'France', 'Great Britain', 'Italy', 'Germany']
+[-23714.217, -23706.5, -23698.271, -23697.166]
+True
+0
+Sales
+['Piso', 'Chalet', 'Apartamento', 'Chalet adosado', 'Chalet unifamiliar']
+[10, 10, 10, 10]
+True
+1.151
+Poison
+['Lavincompae', '#NI UNA MENOS \xa0♐\xa0✊\xa0🚺', 'SFC The World']
+[1, 2, 12, 6]

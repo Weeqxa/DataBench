@@ -1,0 +1,1002 @@
+[
+  {
+    "question": "Does the author with the longest name post mainly original content?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['author_name', 'type']",
+    "column_types": "['category', 'category']",
+    "sample_answer": "False",
+    "dataset": "050_ING",
+    "index": 989
+  },
+  {
+    "question": "What is the difference betweent the highest amount lifted and the lowest?",
+    "answer": "299.0",
+    "type": "number",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "287.0",
+    "dataset": "074_Lift",
+    "index": 1602
+  },
+  {
+    "question": "From which sector is the job listing with the highest salary?",
+    "answer": "Insurance",
+    "type": "category",
+    "columns_used": "['Sector', 'avg_salary']",
+    "column_types": "['category', 'number[double]']",
+    "sample_answer": "Information Technology",
+    "dataset": "048_Data",
+    "index": 959
+  },
+  {
+    "question": "List the diabetes outcomes of the top 5 individuals with the highest insulin levels.",
+    "answer": "[1, 1, 1, 1, 1]",
+    "type": "list[category]",
+    "columns_used": "['Insulin', 'Outcome']",
+    "column_types": "['number[uint16]', 'number[uint8]']",
+    "sample_answer": "[1, 0, 0, 1, 1]",
+    "dataset": "028_Predict",
+    "index": 559
+  },
+  {
+    "question": "List the unique numerical weekly values present in this dataset",
+    "answer": "[7, 1, 2, 3, 4, 5, 6]",
+    "type": "list[number]",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "[7]",
+    "dataset": "079_Coffee",
+    "index": 1780
+  },
+  {
+    "question": "Are there any domesticated animals in the dataset?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['domestic']",
+    "column_types": "['number[uint8]']",
+    "sample_answer": "True",
+    "dataset": "064_Clustering",
+    "index": 1271
+  },
+  {
+    "question": "What is the most common number of programming languages used by participants on a regular basis?",
+    "answer": "2",
+    "type": "number",
+    "columns_used": "['What programming languages do you use on a regular basis?']",
+    "column_types": "['list[category]']",
+    "sample_answer": "3.0",
+    "dataset": "030_Professionals",
+    "index": 592
+  },
+  {
+    "question": "What's the name of the song with the most energy?",
+    "answer": "Marathon (Mix Cut) - Simon O'Shine Mix",
+    "type": "category",
+    "columns_used": "[energy, name]",
+    "column_types": "['number[double]', 'category']",
+    "sample_answer": "Give It Up (feat. Elizabeth Gillies & Ariana Grande)",
+    "dataset": "045_Predict",
+    "index": 900
+  },
+  {
+    "question": "What are the top 3 regions with the most countries with a Generosity score above 0.2?",
+    "answer": "['Western Europe', 'Southeast Asia', 'Sub-Saharan Africa']",
+    "type": "list[category]",
+    "columns_used": "['Generosity', 'Regional indicator']",
+    "column_types": "['number[double]', 'category']",
+    "sample_answer": "['Western Europe', 'Sub-Saharan Africa', 'Central and Eastern Europe']",
+    "dataset": "034_World",
+    "index": 678
+  },
+  {
+    "question": "What are the 5 highest counts of listings by a single host for entire homes?",
+    "answer": "[288, 288, 288, 288, 288]",
+    "type": "list[number]",
+    "columns_used": "['calculated_host_listings_count_entire_homes']",
+    "column_types": "['number[uint16]']",
+    "sample_answer": "[1, 1, 1, 1, 1]",
+    "dataset": "006_London",
+    "index": 123
+  },
+  {
+    "question": "Do we have respondents who fall under both PRIVADO control and NACIONAL market?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "[CONTROL, MERCADO]",
+    "column_types": "['category', 'category']",
+    "sample_answer": "True",
+    "dataset": "024_Salary",
+    "index": 467
+  },
+  {
+    "question": "What is the highest number of matches expected by any participant in the dataset?",
+    "answer": "18.0",
+    "type": "number",
+    "columns_used": "['expected_num_matches']",
+    "column_types": "['number[UInt8]']",
+    "sample_answer": "9.0",
+    "dataset": "040_Speed",
+    "index": 795
+  },
+  {
+    "question": "Who is the author of the tweet with the most retweets?",
+    "answer": "Joe Biden",
+    "type": "category",
+    "columns_used": "['author_name<gx:category>', 'retweets<gx:number>']",
+    "column_types": "['category', 'number[uint32]']",
+    "sample_answer": "Joe Biden",
+    "dataset": "054_Joe",
+    "index": 1079
+  },
+  {
+    "question": "List the top 3 most frequent speakers in the dataset. If two have the same count go by alphabetical order. ",
+    "answer": "['Alex Gendler', 'Iseult Gillespie', 'Emma Bryce']",
+    "type": "list[category]",
+    "columns_used": "['speaker_1']",
+    "column_types": "['category']",
+    "sample_answer": "['Al Gore', 'Anand Agarawala', 'Andrés Ruzo']",
+    "dataset": "037_Ted",
+    "index": 742
+  },
+  {
+    "question": "What are the highest 3 years spent in the company? ",
+    "answer": "[10, 10, 10]",
+    "type": "list[number]",
+    "columns_used": "['Years in the Company']",
+    "column_types": "['number']",
+    "sample_answer": "[6, 5, 5]",
+    "dataset": "033_Employee",
+    "index": 660
+  },
+  {
+    "question": "Is there a Pokémon named 'Pikachu' in the dataset?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['name']",
+    "column_types": "['category']",
+    "sample_answer": "False",
+    "dataset": "051_Pokemon",
+    "index": 1008
+  },
+  {
+    "question": "How many animals are there with 2 legs?",
+    "answer": "27",
+    "type": "number",
+    "columns_used": "['legs']",
+    "column_types": "['number[uint8]']",
+    "sample_answer": "4",
+    "dataset": "064_Clustering",
+    "index": 1275
+  },
+  {
+    "question": "Which division is most commonly mentioned in the reviews?",
+    "answer": "General",
+    "type": "category",
+    "columns_used": "['Division Name']",
+    "column_types": "['category']",
+    "sample_answer": "General",
+    "dataset": "010_ECommerce",
+    "index": 195
+  },
+  {
+    "question": "What are the top 4 states among companies with a disbursement gross greater than $1,000,000?",
+    "answer": "['CA', 'TX', 'FL', 'AZ']",
+    "type": "list[category]",
+    "columns_used": "['DisbursementGross', 'State']",
+    "column_types": "['number[uint32]', 'category']",
+    "sample_answer": "[]",
+    "dataset": "043_Predict",
+    "index": 863
+  },
+  {
+    "question": "What are the bottom 3 weights of the entities?",
+    "answer": "[1.0, 1.0, 1.0]",
+    "type": "list[number]",
+    "columns_used": "['weight']",
+    "column_types": "['number[double]']",
+    "sample_answer": "[3.0, 5.0, 7.0]",
+    "dataset": "063_Influencers",
+    "index": 1267
+  },
+  {
+    "question": "Do any reviews originate from 'AO'?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['country_code']",
+    "column_types": "['category']",
+    "sample_answer": "False",
+    "dataset": "031_Trustpilot",
+    "index": 607
+  },
+  {
+    "question": "How many unique origin names are there in the dataset?",
+    "answer": "1904",
+    "type": "number",
+    "columns_used": "['name_origin']",
+    "column_types": "['category']",
+    "sample_answer": "17",
+    "dataset": "036_US",
+    "index": 716
+  },
+  {
+    "question": "What keyword has the highest average monthly searches?",
+    "answer": "no code data science",
+    "type": "category",
+    "columns_used": "['Avg. monthly searches', 'Keyword']",
+    "column_types": "['number[uint8]', 'category']",
+    "sample_answer": "no code analytics platform",
+    "dataset": "025_Data",
+    "index": 494
+  },
+  {
+    "question": "What are the top 3 animal names with the most legs? If there are more than two with the lowest number go with alphabetical order",
+    "answer": "['octopus', 'scorpion', 'crayfish']",
+    "type": "list[category]",
+    "columns_used": "['animal_name', 'legs']",
+    "column_types": "['category', 'number[uint8]']",
+    "sample_answer": "['honeybee', 'gnat', 'wasp']",
+    "dataset": "064_Clustering",
+    "index": 1280
+  },
+  {
+    "question": "Which are the highest 3 ratings given?",
+    "answer": "[5.0, 5.0, 5.0]",
+    "type": "list[number]",
+    "columns_used": "['Rating']",
+    "column_types": "['number[double]']",
+    "sample_answer": "[4.7, 4.4, 4.3]",
+    "dataset": "048_Data",
+    "index": 967
+  },
+  {
+    "question": "Are there any foods that contain no fat at all?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['Total Fat (g)']",
+    "column_types": "['number[double]']",
+    "sample_answer": "False",
+    "dataset": "056_Emoji",
+    "index": 1110
+  },
+  {
+    "question": "What's the average Perceptions of corruption score among the countries in Sub-Saharan Africa with a Ladder score below 5 and a Social support score below 0.5?",
+    "answer": "0.7493706045",
+    "type": "number",
+    "columns_used": "['Regional indicator', 'Perceptions of corruption', 'Ladder score', 'Social support']",
+    "column_types": "['category', 'number[double]', 'number[double]', 'number[double]']",
+    "sample_answer": "0.871",
+    "dataset": "034_World",
+    "index": 670
+  },
+  {
+    "question": "Which profession has the highest Emotional_Range?",
+    "answer": "Mortgage Banker",
+    "type": "category",
+    "columns_used": "['Profession', 'Emotional_Range']",
+    "column_types": "['category', 'number[double]']",
+    "sample_answer": "U.S. Representative",
+    "dataset": "052_Professional",
+    "index": 1038
+  },
+  {
+    "question": "What are the bottom 2 entities in terms of page rank norm?",
+    "answer": "['LIFE', 'New Options Project']",
+    "type": "list[category]",
+    "columns_used": "['name', 'page_rank_norm']",
+    "column_types": "['category', 'number[double]']",
+    "sample_answer": "['Christopher', 'Chris J. Headleand']",
+    "dataset": "063_Influencers",
+    "index": 1261
+  },
+  {
+    "question": "What are the years of production of the top 5 songs with the longest lyrics?",
+    "answer": "[1998, 2009, 2010, 2007, 2002]",
+    "type": "list[number]",
+    "columns_used": "['Year', 'Lyrics']",
+    "column_types": "['number[uint16]', 'text']",
+    "sample_answer": "[2013, 1973, 1988, 1994, 2005]",
+    "dataset": "035_Billboard",
+    "index": 704
+  },
+  {
+    "question": "There were no days when the maximum temperature was below freezing point.",
+    "answer": "False",
+    "type": "boolean",
+    "columns_used": "[TMAX]",
+    "column_types": "['number[UInt8]']",
+    "sample_answer": "False",
+    "dataset": "009_Central",
+    "index": 168
+  },
+  {
+    "question": "How many unique occupations are there in the dataset?",
+    "answer": "4",
+    "type": "number",
+    "columns_used": "['Occupation']",
+    "column_types": "['category']",
+    "sample_answer": "3",
+    "dataset": "016_Holiday",
+    "index": 310
+  },
+  {
+    "question": "On weekdays, what's the most commonly bought item?",
+    "answer": "Coffee",
+    "type": "category",
+    "columns_used": "[Item, weekday_weekend]",
+    "column_types": "['category', 'category']",
+    "sample_answer": " Coffee",
+    "dataset": "060_Bakery",
+    "index": 1197
+  },
+  {
+    "question": "List the payment methods of the top 3 purchases with the highest total cost.",
+    "answer": "['Credit card', 'Credit card', 'Ewallet']",
+    "type": "list[category]",
+    "columns_used": "['Total', 'Payment']",
+    "column_types": "['number[double]', 'category']",
+    "sample_answer": "['Credit card', 'Cash', 'Ewallet']",
+    "dataset": "027_Supermarket",
+    "index": 537
+  },
+  {
+    "question": "Identify the 5 largest total amounts paid for trips.",
+    "answer": "[80.0, 80.0, 80.0, 80.0, 80.0]",
+    "type": "list[number]",
+    "columns_used": "['total_amount']",
+    "column_types": "['number[double]']",
+    "sample_answer": "[45.8,\n39.9,\n33.2,\n25.2,\n24.87]",
+    "dataset": "004_Taxi",
+    "index": 83
+  },
+  {
+    "question": "Are there any customers with a total transaction amount of zero?",
+    "answer": "False",
+    "type": "boolean",
+    "columns_used": "['total_trans_amt']",
+    "column_types": "['number[uint16]']",
+    "sample_answer": "False",
+    "dataset": "047_Bank",
+    "index": 930
+  },
+  {
+    "question": "What's the highest value for RETRINOIN_ac1q in the dataset?",
+    "answer": "199496.34",
+    "type": "number",
+    "columns_used": "[RETRINOIN_ac1q]",
+    "column_types": "['number[double]']",
+    "sample_answer": "59117.54",
+    "dataset": "024_Salary",
+    "index": 471
+  },
+  {
+    "question": "What is the quality rating of the wine with the lowest volatile acidity?",
+    "answer": "7",
+    "type": "category",
+    "columns_used": "['volatile acidity', 'quality']",
+    "column_types": "['number[double]', 'number[uint8]']",
+    "sample_answer": "7.0",
+    "dataset": "026_Predicting",
+    "index": 515
+  },
+  {
+    "question": "List the unique different smoking statuses found among individuals over 60 years of age.",
+    "answer": "['yes', 'no']",
+    "type": "list[category]",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "['yes']",
+    "dataset": "073_Med_Cost",
+    "index": 1579
+  },
+  {
+    "question": "List the top 5 ranks of billionaires who are not self-made.",
+    "answer": "[3, 10, 14, 16, 18]",
+    "type": "list[number]",
+    "columns_used": "['selfMade', 'rank']",
+    "column_types": "['boolean', 'number[uint16]']",
+    "sample_answer": "[288, 296, 509, 523, 601]",
+    "dataset": "001_Forbes",
+    "index": 20
+  },
+  {
+    "question": "Are there any respondents who participated in the 2016 Presidential election (four years ago) but are not planning to do so in the upcoming election?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['Did you vote in the 2016 Presidential election? (Four years ago)', 'How likely are you to vote in the forthcoming US Presidential election? Early Voting Open']",
+    "column_types": "['category', 'category']",
+    "sample_answer": "True",
+    "dataset": "058_US",
+    "index": 1149
+  },
+  {
+    "question": "How big is the biggest contract in the dataset? Answer in USD.",
+    "answer": "812960107.83",
+    "type": "number",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "800433.3",
+    "dataset": "068_WorldBank_Awards",
+    "index": 1390
+  },
+  {
+    "question": "What is the reviewer location with the highest average rating? If there is a tie then pick the first one alphabetically",
+    "answer": "Armenia",
+    "type": "category",
+    "columns_used": "['Reviewer_Location', 'Rating']",
+    "column_types": "['category', 'number[uint8]']",
+    "sample_answer": "Australia",
+    "dataset": "061_Disneyland",
+    "index": 1219
+  },
+  {
+    "question": "List the top 3 most common areas of knowledge.",
+    "answer": "['Computer Science', 'Business', 'Enginering & Architecture']",
+    "type": "list[category]",
+    "columns_used": "['What area of knowledge is closer to you?']",
+    "column_types": "['list[category]']",
+    "sample_answer": "['Computer Science', 'Business', 'Art & Humanities']",
+    "dataset": "003_Love",
+    "index": 57
+  },
+  {
+    "question": "List the 3 highest mileages present.",
+    "answer": "[5000000, 4000006, 3500000]",
+    "type": "list[number]",
+    "columns_used": "['kms']",
+    "column_types": "['number[uint32]']",
+    "sample_answer": "['370000', '300000', '254000']",
+    "dataset": "059_Second",
+    "index": 1185
+  },
+  {
+    "question": "Is the average age of participants who got a match higher than those who didn't?",
+    "answer": "False",
+    "type": "boolean",
+    "columns_used": "['match', 'age']",
+    "column_types": "['number[uint8]', 'number[UInt8]']",
+    "sample_answer": "True",
+    "dataset": "040_Speed",
+    "index": 792
+  },
+  {
+    "question": "How many respondents in the survey are eligible to vote?",
+    "answer": "1315",
+    "type": "number",
+    "columns_used": "['Are you registered to vote?']",
+    "column_types": "['category']",
+    "sample_answer": "11",
+    "dataset": "058_US",
+    "index": 1152
+  },
+  {
+    "question": "What type of the roller coaster is the oldest in the dataset?",
+    "answer": "Wood",
+    "type": "category",
+    "columns_used": "[Type, Opening date]",
+    "column_types": "['category', 'category']",
+    "sample_answer": "Other",
+    "dataset": "013_Roller",
+    "index": 255
+  },
+  {
+    "question": "List the 4 most common predicted categories in the dataset.",
+    "answer": "['affection', 'achievement', 'enjoy_the_moment', 'bonding']",
+    "type": "list[category]",
+    "columns_used": "['predicted_category']",
+    "column_types": "['category']",
+    "sample_answer": "['affection', 'achievement', 'enjoy_the_moment', 'nature']",
+    "dataset": "039_Happy",
+    "index": 782
+  },
+  {
+    "question": "What are the 2 prices of the least expensive properties?",
+    "answer": "[0.0, 0.0]",
+    "type": "list[number]",
+    "columns_used": "['price']",
+    "column_types": "['category']",
+    "sample_answer": "[38, 45]",
+    "dataset": "014_Airbnb",
+    "index": 282
+  },
+  {
+    "question": "Is there a customer with designation 'VP'?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['Designation']",
+    "column_types": "['category']",
+    "sample_answer": "True",
+    "dataset": "016_Holiday",
+    "index": 307
+  },
+  {
+    "question": "How many purchases were made in Yangon city?",
+    "answer": "340",
+    "type": "number",
+    "columns_used": "['City']",
+    "column_types": "['category']",
+    "sample_answer": "11",
+    "dataset": "027_Supermarket",
+    "index": 532
+  },
+  {
+    "question": "What is the class type of the animals with the most legs?",
+    "answer": "7",
+    "type": "category",
+    "columns_used": "['class_type', 'legs']",
+    "column_types": "['number[uint8]', 'number[uint8]']",
+    "sample_answer": "6",
+    "dataset": "064_Clustering",
+    "index": 1278
+  },
+  {
+    "question": "What are the dates of the top 5 highest recorded precipitation events?",
+    "answer": "[1882-09-23, 2007-04-15, 1977-11-08, 1903-10-09, 2021-09-01]",
+    "type": "list[category]",
+    "columns_used": "[DATE, PRCP]",
+    "column_types": "['date[ns, UTC]', 'number[double]']",
+    "sample_answer": "['1891-07-24', '1966-10-16', '1945-09-27', '1999-05-18', '1898-09-15']",
+    "dataset": "009_Central",
+    "index": 177
+  },
+  {
+    "question": "What are the top 6 number of fatalities caused by tornadoes in the dataset?",
+    "answer": "[158, 116, 114, 94, 80, 72]",
+    "type": "list[number]",
+    "columns_used": "[fat]",
+    "column_types": "['number[uint8]']",
+    "sample_answer": "[1, 0, 0, 0, 0, 0]",
+    "dataset": "008_Tornados",
+    "index": 164
+  },
+  {
+    "question": "Is the maximum medical charge in the dataset greater than $60,000?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "False",
+    "dataset": "073_Med_Cost",
+    "index": 1557
+  },
+  {
+    "question": "How many unique clothing items are there in the dataset?",
+    "answer": "1206",
+    "type": "number",
+    "columns_used": "[Clothing ID]",
+    "column_types": "['number[uint16]']",
+    "sample_answer": "20",
+    "dataset": "010_ECommerce",
+    "index": 192
+  },
+  {
+    "question": "Which passenger class has the highest number of survivors?",
+    "answer": "1",
+    "type": "category",
+    "columns_used": "[Pclass, Survived]",
+    "column_types": "['number[uint8]', 'boolean']",
+    "sample_answer": "3",
+    "dataset": "002_Titanic",
+    "index": 33
+  },
+  {
+    "question": "Which 4 resting electrocardiographic results are least common?",
+    "answer": "['ST', 'LVH', 'Normal']",
+    "type": "list[category]",
+    "columns_used": "['RestingECG']",
+    "column_types": "['category']",
+    "sample_answer": "['ST', 'LVH', 'Normal']",
+    "dataset": "012_Heart",
+    "index": 238
+  },
+  {
+    "question": "What are the top 6 favorite counts of the tweets?",
+    "answer": "[589793, 589750, 557779, 539249, 476457, 376626]",
+    "type": "list[number]",
+    "columns_used": "['favorites']",
+    "column_types": "['number[uint32]']",
+    "sample_answer": "[105448, 85433, 84944, 79544, 67612, 59793]",
+    "dataset": "062_Trump",
+    "index": 1246
+  },
+  {
+    "question": "Are there any transactions recorded in the evening on weekends?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "[period_day, weekday_weekend]",
+    "column_types": "['category', 'category']",
+    "sample_answer": "True",
+    "dataset": "060_Bakery",
+    "index": 1191
+  },
+  {
+    "question": "What is the maximum number of bedrooms a property has in this dataset?",
+    "answer": "22.0",
+    "type": "number",
+    "columns_used": "['bedrooms']",
+    "column_types": "['number[UInt8]']",
+    "sample_answer": "3.0",
+    "dataset": "006_London",
+    "index": 112
+  },
+  {
+    "question": "Which company received the lowest rating?",
+    "answer": "N26",
+    "type": "category",
+    "columns_used": "['rating', 'Company']",
+    "column_types": "['number[uint8]', 'category']",
+    "sample_answer": "N26",
+    "dataset": "031_Trustpilot",
+    "index": 616
+  },
+  {
+    "question": "Name the 4 most frequently occurring police districts.",
+    "answer": "[Central, Northern, Mission, Southern]",
+    "type": "list[category]",
+    "columns_used": "[Police District]",
+    "column_types": "['category']",
+    "sample_answer": "['Northern', 'Central', 'Mission', 'Bayview']",
+    "dataset": "011_SF",
+    "index": 218
+  },
+  {
+    "question": "Who are the 6 customers with the highest total transaction amount?",
+    "answer": "[18484, 17744, 17634, 17498, 17437, 17350]",
+    "type": "list[number]",
+    "columns_used": "['total_trans_amt', 'id']",
+    "column_types": "['number[uint16]', 'number[uint16]']",
+    "sample_answer": "[2000, 2418, 10093, 3782, 9612, 7951]",
+    "dataset": "047_Bank",
+    "index": 947
+  },
+  {
+    "question": "Are there any married individuals who reflected on 'exercise'?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['marital', 'predicted_category']",
+    "column_types": "['category', 'category']",
+    "sample_answer": "False",
+    "dataset": "039_Happy",
+    "index": 772
+  },
+  {
+    "question": "What's the total number of incidents reported online?",
+    "answer": "144099",
+    "type": "number",
+    "columns_used": "[Filed Online]",
+    "column_types": "['boolean']",
+    "sample_answer": "1",
+    "dataset": "011_SF",
+    "index": 210
+  },
+  {
+    "question": "What's the name of the athlete who participated in the most number of games?",
+    "answer": "Robert Tait McKenzie",
+    "type": "category",
+    "columns_used": "[Name]",
+    "column_types": "['category']",
+    "sample_answer": "Khalid Raghib",
+    "dataset": "046_120",
+    "index": 919
+  },
+  {
+    "question": "Name the top 2 primary categories that have the most Pokémon.",
+    "answer": "['Water', 'Normal']",
+    "type": "list[category]",
+    "columns_used": "['type1']",
+    "column_types": "['category']",
+    "sample_answer": "['Normal', 'Grass']",
+    "dataset": "051_Pokemon",
+    "index": 1022
+  },
+  {
+    "question": "List the ages of the 3 youngest teenagers.",
+    "answer": "[18, 18, 18]",
+    "type": "list[number]",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "[18, 19, 19]",
+    "dataset": "073_Med_Cost",
+    "index": 1578
+  },
+  {
+    "question": "Are all companies with a default amount greater than $250,000 in the food sector?",
+    "answer": "False",
+    "type": "boolean",
+    "columns_used": "['default_amount', 'Sector']",
+    "column_types": "['number[uint32]', 'category']",
+    "sample_answer": "False",
+    "dataset": "043_Predict",
+    "index": 851
+  },
+  {
+    "question": "How many unique teams are there in the dataset?",
+    "answer": "230",
+    "type": "number",
+    "columns_used": "[Team]",
+    "column_types": "['category']",
+    "sample_answer": "15",
+    "dataset": "046_120",
+    "index": 913
+  },
+  {
+    "question": "What is the most common name?",
+    "answer": "Christophe Viau",
+    "type": "category",
+    "columns_used": "['name']",
+    "column_types": "['category']",
+    "sample_answer": "Peter Skomoroch",
+    "dataset": "063_Influencers",
+    "index": 1256
+  },
+  {
+    "question": "Identify the 3 departments with the lowest average satisfaction levels.",
+    "answer": "['accounting', 'hr', 'technical']",
+    "type": "list[category]",
+    "columns_used": "[Department, Satisfaction Level]",
+    "column_types": "['category', 'number[double]']",
+    "sample_answer": "['sales', 'support', 'management']",
+    "dataset": "018_Staff",
+    "index": 359
+  },
+  {
+    "question": "Identify the top 3 years with the highest employee hiring.",
+    "answer": "['2017', '2018', '2016']",
+    "type": "list[number]",
+    "columns_used": "[Date Hired]",
+    "column_types": "['date[ns, UTC]']",
+    "sample_answer": "[2017, 2016, 2018]",
+    "dataset": "018_Staff",
+    "index": 361
+  },
+  {
+    "question": "Are there any organizations in the dataset?",
+    "answer": "False",
+    "type": "boolean",
+    "columns_used": "['is_organization']",
+    "column_types": "['boolean']",
+    "sample_answer": "False",
+    "dataset": "063_Influencers",
+    "index": 1248
+  },
+  {
+    "question": "What is the maximum total transaction amount recorded?",
+    "answer": "18484",
+    "type": "number",
+    "columns_used": "['total_trans_amt']",
+    "column_types": "['number[uint16]']",
+    "sample_answer": "5149",
+    "dataset": "047_Bank",
+    "index": 934
+  },
+  {
+    "question": "What is the bank for the company with the highest default amount?",
+    "answer": "COMMUNITY BANK & TRUST",
+    "type": "category",
+    "columns_used": "['default_amount', 'Bank']",
+    "column_types": "['number[uint32]', 'category']",
+    "sample_answer": "READYCAP LENDING, LLC",
+    "dataset": "043_Predict",
+    "index": 859
+  },
+  {
+    "question": "What are the names of the top 3 fastest roller coasters?",
+    "answer": "[Formula Rossa, Kingda Ka, Top Thrill Dragster]",
+    "type": "list[category]",
+    "columns_used": "[coaster_name, speed_mph]",
+    "column_types": "['category', 'number[double]']",
+    "sample_answer": "[\\'Afterburn (roller coaster)\\', \\'Hades 360\\', \\'Montu (roller coaster)\\']",
+    "dataset": "013_Roller",
+    "index": 257
+  },
+  {
+    "question": "What are the top 3 Perceptions of corruption scores among the countries in Sub-Saharan Africa?",
+    "answer": "[0.891806662, 0.861874342, 0.861330688]",
+    "type": "list[number]",
+    "columns_used": "['Perceptions of corruption', 'Regional indicator']",
+    "column_types": "['number[double]', 'category']",
+    "sample_answer": "[0.933, 0.916, 0.915]",
+    "dataset": "034_World",
+    "index": 680
+  },
+  {
+    "question": "Is the highest alcohol content wine also the one with the highest quality rating?",
+    "answer": "False",
+    "type": "boolean",
+    "columns_used": "['alcohol', 'quality']",
+    "column_types": "['number[double]', 'number[uint8]']",
+    "sample_answer": "False",
+    "dataset": "026_Predicting",
+    "index": 507
+  },
+  {
+    "question": "How many people in the dataset have a stroke?",
+    "answer": "249",
+    "type": "number",
+    "columns_used": "['stroke']",
+    "column_types": "['number[uint8]']",
+    "sample_answer": "1",
+    "dataset": "038_Stroke",
+    "index": 753
+  },
+  {
+    "question": "What is the payment method used for the purchase with the highest total cost?",
+    "answer": "Credit card",
+    "type": "category",
+    "columns_used": "['Total', 'Payment']",
+    "column_types": "['number[double]', 'category']",
+    "sample_answer": "Credit card",
+    "dataset": "027_Supermarket",
+    "index": 533
+  },
+  {
+    "question": "Which 3 user timezones have the most number of tweets?",
+    "answer": "['Eastern Time (US & Canada)', 'Central Time (US & Canada)', 'Pacific Time (US & Canada)']",
+    "type": "list[category]",
+    "columns_used": "['user_timezone']",
+    "column_types": "['category']",
+    "sample_answer": "['Eastern Time (US & Canada)', 'Pacific Time (US & Canada)', 'Alaska']",
+    "dataset": "041_Airline",
+    "index": 823
+  },
+  {
+    "question": "List the top 4 years according to the number of reviews.",
+    "answer": "[2012, 2011, 2010, 2009]",
+    "type": "list[number]",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "[2012, 2010, 2011, 2009]",
+    "dataset": "067_TripAdvisor",
+    "index": 1370
+  },
+  {
+    "question": "Did any respondent place themselves at the extreme right of the Left-Right economic values axis?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "['User self-placement on Left-Right economic values axis']",
+    "column_types": "['number[UInt8]']",
+    "sample_answer": "False",
+    "dataset": "057_Spain",
+    "index": 1131
+  },
+  {
+    "question": "How many unique URLs are in the dataset?",
+    "answer": "28",
+    "type": "number",
+    "columns_used": "['URLs']",
+    "column_types": "['url']",
+    "sample_answer": "13",
+    "dataset": "025_Data",
+    "index": 489
+  },
+  {
+    "question": "What is the location of the incident with the highest number of onboard occupants?",
+    "answer": "near Ueno Village...",
+    "type": "category",
+    "columns_used": "['Incident_Location', 'Onboard_Total']",
+    "column_types": "['category', 'category']",
+    "sample_answer": "Sioux Falls ...",
+    "dataset": "019_Aircraft",
+    "index": 376
+  },
+  {
+    "question": "What are the top 5 most common team names in the dataset?",
+    "answer": "[United States, France, Great Britain, Italy, Germany]",
+    "type": "list[category]",
+    "columns_used": "[Team]",
+    "column_types": "['category']",
+    "sample_answer": "['Morocco', 'Romania', 'Germany', 'Japan', 'Italy']",
+    "dataset": "046_120",
+    "index": 921
+  },
+  {
+    "question": "What are the 4 lowest x values in the dataset?",
+    "answer": "[-23714.217, -23706.5, -23698.271, -23697.166]",
+    "type": "list[number]",
+    "columns_used": "[x]",
+    "column_types": "['number[double]']",
+    "sample_answer": "[-19757.53, -16221.655, -10021.664, -5854.7065]",
+    "dataset": "024_Salary",
+    "index": 482
+  },
+  {
+    "question": "Is there any woman in the dataset with a BMI greater than 30?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "False",
+    "dataset": "077_Gestational",
+    "index": 1681
+  },
+  {
+    "question": "How many products are listed under 'Plant-based foods and beverages'?",
+    "answer": "1913",
+    "type": "number",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "2",
+    "dataset": "070_OpenFoodFacts",
+    "index": 1465
+  },
+  {
+    "question": "Which department has the highest average YearsAtCompany?",
+    "answer": "Sales",
+    "type": "category",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "Sales",
+    "dataset": "066_IBM_HR",
+    "index": 1318
+  },
+  {
+    "question": "What are the five types of properties more frequently listed?",
+    "answer": "['Piso', 'Chalet', 'Apartamento', 'Chalet adosado', 'Chalet unifamiliar']",
+    "type": "list[category]",
+    "columns_used": "['Tipo']",
+    "column_types": "['category']",
+    "sample_answer": "['Piso', 'Chalet', 'Apartamento', 'Chalet adosado', 'Chalet pareado']",
+    "dataset": "020_Real",
+    "index": 397
+  },
+  {
+    "question": "What are the quantities of products bought in the top 4 purchases with the highest total cost?",
+    "answer": "[10, 10, 10, 10]",
+    "type": "list[number]",
+    "columns_used": "['Total', 'Quantity']",
+    "column_types": "['number[double]', 'number[uint8]']",
+    "sample_answer": "[10, 7, 10, 10]",
+    "dataset": "027_Supermarket",
+    "index": 541
+  },
+  {
+    "question": "Is every passenger's name unique?",
+    "answer": "True",
+    "type": "boolean",
+    "columns_used": "[Name]",
+    "column_types": "['text']",
+    "sample_answer": "True",
+    "dataset": "002_Titanic",
+    "index": 27
+  },
+  {
+    "question": "What is the average number of helpful votes?",
+    "answer": "1.1509",
+    "type": "number",
+    "columns_used": "[]",
+    "column_types": "[]",
+    "sample_answer": "0.7999",
+    "dataset": "067_TripAdvisor",
+    "index": 1365
+  },
+  {
+    "question": "What is the primary type of the Pokémon with the highest defense stat?",
+    "answer": "Poison",
+    "type": "category",
+    "columns_used": "['defense', 'type1']",
+    "column_types": "['number[uint8]', 'category']",
+    "sample_answer": "Water",
+    "dataset": "051_Pokemon",
+    "index": 1016
+  },
+  {
+    "question": "Who are the authors of the top 3 most retweeted posts?",
+    "answer": "['Lavincompae', '#NI UNA MENOS \\xa0♐\\xa0✊\\xa0🚺', 'SFC The World']",
+    "type": "list[category]",
+    "columns_used": "['author_name', 'retweets']",
+    "column_types": "['category', 'number[uint8]']",
+    "sample_answer": "[Manuel, ING enfurecido 🦁, Albert Navarro]",
+    "dataset": "050_ING",
+    "index": 1000
+  },
+  {
+    "question": "What are the four most commonly ordered quantities?",
+    "answer": "[1, 2, 12, 6]",
+    "type": "list[number]",
+    "columns_used": "['Quantity']",
+    "column_types": "['number[int32]']",
+    "sample_answer": "[1, 4, 2, 12]",
+    "dataset": "065_RFM",
+    "index": 1306
+  }
+]

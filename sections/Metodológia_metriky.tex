@@ -73,9 +73,10 @@ Na vyhodnotenie správnosti predikcií sa používa nástroj
 
 Pri analýze výsledkov je potrebné rozlišovať medzi úspešným vykonaním kódu a správnosťou odpovede. Aj v prípade, keď sa kód vykoná bez chyby, môže vytvorená odpoveď obsahovať nesprávnu hodnotu. Naopak, ak sa spracovanie otázky nepodarí dokončiť, prípad sa musí zohľadniť pri interpretácii celkovej úspešnosti systému.
 
-Aktuálna implementácia zaznamenáva výsledky vo formáte
-\texttt{results.jsonl}. Samostatné súbory
-\texttt{predictions.txt} a \texttt{predictions\_lite.txt}, ktoré by obsahovali iba predikcie v poradí otázok požadovanom benchmarkom, nie sú v súčasnej verzii implementované.
+Interaktívny program zaznamenáva výsledky vo formáte
+\texttt{results.jsonl}. Samostatný hodnotiaci skript
+\texttt{scripts/evaluate\_baseline.py} ukladá výsledky oboch režimov oddelene a exportuje súbory
+\texttt{predictions.txt} a \texttt{predictions\_lite.txt} v poradí uloženej výberovej množiny otázok. Tieto súbory sa kontrolujú a vyhodnocujú pomocou \texttt{databench\_eval}; ide o vývojovú vzorku, nie o kompletný súťažný výstup.
 
 \subsection{Porovnanie DataBench a DataBench Lite}
 
@@ -138,7 +139,7 @@ Referenčné testovacie odpovede sa nemajú používať na priebežné prispôso
 
 \subsection{Prezentácia výsledkov}
 
-Výsledky hodnotenia baseline sa sumarizujú pomocou počtu spracovaných otázok, počtu úspešne spracovaných otázok a hodnôt metrík \textit{Accuracy} a \textit{Execution Error Rate}. Tabuľka~\ref{tab:baseline-metriky} poskytuje priestor na porovnanie výsledkov jednotlivých variantov benchmarku.
+Tabuľka~\ref{tab:baseline-metriky} sumarizuje výsledky hodnotenia modelu \texttt{gemini-3.5-flash-lite} na rovnakej množine 100 otázok v režimoch DataBench a DataBench Lite. Otázky boli vybrané z konfigurácie \texttt{qa}, rozdelenia \texttt{train}, z 59 tabuliek, po 20 otázok pre každý z piatich typov odpovedí. Výber bol vytvorený so semienkom \texttt{seed=42}; zahrnuté boli iba otázky s dostupnou referenčnou odpoveďou pre oba režimy. Správnosť predikcií bola vyhodnotená pomocou \texttt{databench\_eval} vo verzii 4.0.1. Ide o vývojové hodnotenie baseline, nie o oficiálny výsledok na súťažnom testovacom rozdelení.
 
 \begin{table}[htbp]
     \centering
@@ -150,19 +151,23 @@ Výsledky hodnotenia baseline sa sumarizujú pomocou počtu spracovaných otázo
         \textbf{DataBench} &
         \textbf{DataBench Lite} \\
         \hline
-        Počet spracovaných otázok & -- & -- \\
+        Počet spracovaných otázok & 100 & 100 \\
         \hline
-        Počet úspešne spracovaných otázok & -- & -- \\
+        Počet úspešne spracovaných otázok & 97 & 95 \\
         \hline
-        Počet správnych odpovedí & -- & -- \\
+        Počet správnych odpovedí & 86 & 81 \\
         \hline
-        Accuracy & -- & -- \\
+        Celková Accuracy (všetky otázky) & 86,00\,\% & 81,00\,\% \\
         \hline
-        Execution Error Rate & -- & -- \\
+        Accuracy (úspešné otázky) & 88,66\,\% & 85,26\,\% \\
+        \hline
+        Execution Error Rate & 3,00\,\% & 5,00\,\% \\
         \hline
     \end{tabular}
 \end{table}
 
-Hodnoty v tabuľke sa doplnia po vykonaní experimentov. Pri prezentácii výsledkov je potrebné uviesť, že hodnota \textit{Accuracy} sa v aktuálnej implementácii počíta iba z úspešne spracovaných otázok, zatiaľ čo \textit{Execution Error Rate} predstavuje podiel otázok, ktoré neboli označené ako úspešne spracované.
+Celková \textit{Accuracy} predstavuje podiel správnych odpovedí zo všetkých 100 otázok vrátane neúspešne spracovaných prípadov. Riadok \textit{Accuracy (úspešné otázky)} zodpovedá metrike pôvodnej implementácie opísanej vyššie: pre DataBench ide o podiel $86/97$ a pre DataBench Lite o $81/95$. Percentuálne hodnoty sú zaokrúhlené na dve desatinné miesta.
+
+\textit{Execution Error Rate} zachováva vyššie uvedenú definíciu podielu neúspešne spracovaných otázok: v režime DataBench sa nepodarilo dokončiť 3 otázky a v režime DataBench Lite 5 otázok. Nejde o počet všetkých chybných pokusov o vykonanie kódu; nesprávne odpovede po úspešnom spracovaní sa do tejto metriky nezapočítavajú.
 
 Takto prezentované výsledky umožňujú posúdiť správnosť odpovedí aj schopnosť systému dokončiť spracovanie otázok. Zároveň poskytujú základ na identifikáciu obmedzení aktuálneho baseline a na plánovanie jeho ďalších zlepšení.

@@ -173,7 +173,42 @@ python .\tests\test_evaluator.py
 
 The Docker failure test temporarily replaces `generated_code.py` with intentionally failing code and restores the previous file afterward. Avoid running multiple executions that share this file at the same time.
 
-## Current limitations and follow-up work
+## Stage-one evaluation
+
+`scripts/evaluate_baseline.py` selects 100 paired questions (20 per answer type),
+saves Full/Lite results, validates prediction files, and scores them with `databench_eval`.
+
+```powershell
+python scripts/evaluate_baseline.py prepare --experiment state/new_eval --count 100 --seed 42 --offline
+python scripts/evaluate_baseline.py run --experiment state/new_eval
+python scripts/evaluate_baseline.py score --experiment state/new_eval
+```
+
+Use a new experiment directory; `--offline` requires cached dataset metadata.
+Add `--limit 10` to `run` and `score` for a smoke check before the full run.
+Repeated runs skip saved results, including failures; scoring makes no API calls.
+Code, environment or table changes require a new experiment. Run sequentially,
+as code execution uses a shared `generated_code.py` file.
+
+Completed development evaluation: 100 questions from 59 tables in `qa/train`, seed 42.
+
+| Metric | Full | Lite |
+|---|---:|---:|
+| Overall accuracy (all questions) | 86% | 81% |
+| Accuracy among successful records | 88.66% | 85.26% |
+| Processing success rate | 97% | 95% |
+
+All 33 incorrect or failed records were reviewed. Some mismatches involve ambiguous
+questions or reference/format inconsistencies; scores were not adjusted. These are
+development results, not competition scores.
+
+Saved experiment results: [report](state/eval_stage1/scores/report.md),
+[metrics](state/eval_stage1/scores/metrics.json), [error analysis](state/eval_stage1/scores/errors.csv).
+The snapshot's metadata, frozen questions, results and final scores can be committed;
+logs, smoke scoring outputs and other experiment directories remain ignored.
+Evaluation tests: `python -m unittest tests.test_evaluate_baseline -v`.
+
+## Remaining baseline limitations
 
 - Add a pinned `requirements.txt` or lock file and record tested package versions.
 - The generated code is passed to Docker through a shared `generated_code.py` file. Concurrent runs can conflict; use per-run temporary files or unique paths before parallelizing.
@@ -182,7 +217,7 @@ The Docker failure test temporarily replaces `generated_code.py` with intentiona
 - Normalize and test all answer types, missing values, lists, and numeric comparisons against the evaluator's expected behavior.
 - Clarify metric definitions and distinguish generation, syntax-validation, execution, missing-reference, and incorrect-answer cases.
 - The local development run uses `qa` / `train` reference answers. Confirm the required held-out split and official evaluation procedure before reporting benchmark scores.
-- The current repository does not include a verified official predictions-file export (`predictions.txt` / `predictions_lite.txt`); coordinate that output contract with the evaluation teammate.
+- The evaluation harness exports verified prediction files for its frozen development subset. A complete competition submission and competition-data loader remain separate work.
 - Record model name, prompt version, dataset revision/split, run parameters, and package versions for each experiment.
 - The course brief requires a separate appendix documenting LLM/AI-tool use, including tools/models, purposes, prompts, and relevant outputs.
 

@@ -1,0 +1,46 @@
+{
+  "unit_tests": 12,
+  "unit_test_command": "python -m unittest tests.test_evaluate_baseline tests.test_retry -v",
+  "repeat_scoring_identical": true,
+  "scoring_artifact_sha256": {
+    "decisions_full.json": "768238c8aee7ea576b4af086bf7b0fb76121e8b70ce209b5e0694b91199f61e1",
+    "decisions_lite.json": "ce5cfb61eb259a34badd0931da6517a14bd1d9e3ee9477f2c2fb66e1104ae1f5",
+    "errors.csv": "1dc7e9f6b4ea38db85f6ad607f147de0e623243381752a6bf4570dc7d9961a1f",
+    "errors.json": "b660271ea276b05585556e1744ea3aaf573a812530b964cfaacaac1f8b8ebf08",
+    "metrics.json": "65ce11d2cabac88a2ac32e2b3c7e6eb37574f43fbe50b7db6878deea8561bd47",
+    "predictions.txt": "e057250f3e65fe4f1d37f95706e613a7288ffc86847d6b3d6d4aa2c3619ff82a",
+    "predictions_lite.txt": "0b5b3e62e4ec89a55f78e778225f658b9eae664574bf19e984f6acc598b733c2",
+    "report.md": "9d8ec113130c7fb2cc83fe70d09562a5bed4f3b6209762b579b6bec1d399f591"
+  },
+  "baseline_hashes_unchanged": true,
+  "selected_questions": 100,
+  "reviewed_errors": 33,
+  "modes": {
+    "full": {
+      "records": 100,
+      "prediction_lines": 100,
+      "log_files": 100,
+      "generation_attempts": 105,
+      "rate_limit_retries": 13,
+      "elapsed_seconds": 348.112,
+      "processing_statuses": {
+        "success": 97,
+        "error": 3
+      }
+    },
+    "lite": {
+      "records": 100,
+      "prediction_lines": 100,
+      "log_files": 100,
+      "generation_attempts": 107,
+      "rate_limit_retries": 19,
+      "elapsed_seconds": 405.039,
+      "processing_statuses": {
+        "success": 95,
+        "error": 5
+      }
+    }
+  },
+  "python_files_syntax_checked": 22,
+  "api_key_absent_from_artifacts": true
+}

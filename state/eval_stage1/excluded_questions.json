@@ -1,0 +1,116 @@
+[
+  {
+    "index": 14,
+    "dataset": "001_Forbes",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 129,
+    "dataset": "007_Fifa",
+    "type": "number",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 254,
+    "dataset": "013_Roller",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 274,
+    "dataset": "014_Airbnb",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 293,
+    "dataset": "015_Food",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 294,
+    "dataset": "015_Food",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 296,
+    "dataset": "015_Food",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 313,
+    "dataset": "016_Holiday",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 314,
+    "dataset": "016_Holiday",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 315,
+    "dataset": "016_Holiday",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 316,
+    "dataset": "016_Holiday",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 356,
+    "dataset": "018_Staff",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 450,
+    "dataset": "023_Climate",
+    "type": "number",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 655,
+    "dataset": "033_Employee",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 717,
+    "dataset": "036_US",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 854,
+    "dataset": "043_Predict",
+    "type": "number",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 1082,
+    "dataset": "054_Joe",
+    "type": "list[category]",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 1135,
+    "dataset": "057_Spain",
+    "type": "number",
+    "reason": "Missing full or lite reference"
+  },
+  {
+    "index": 1277,
+    "dataset": "064_Clustering",
+    "type": "category",
+    "reason": "Missing full or lite reference"
+  }
+]
