@@ -30,46 +30,62 @@ The retry loop currently treats a Docker failure as a generic execution error in
 ├── sandbox_runner.py               # Executes code and normalizes the result to JSON
 ├── evaluator.py                    # Compares predictions using databench_eval
 ├── metrics.py                      # Computes metrics from results.jsonl
+├── requirements.txt                # Pinned dependencies matching config.json
 ├── Dockerfile                      # Docker image for code execution
 ├── scripts/
 │   ├── download_all_tables.py       # Downloads all.parquet and sample.parquet files
+│   ├── evaluate_baseline.py        # 100-question development evaluation harness
+│   ├── verify_reproducibility.py   # Independent cryptographic hash and metric verifier
 │   ├── inspect_databench_files.py   # Inspects repository files on Hugging Face
 │   ├── validate_all_tables.py      # Checks downloaded table files
 │   ├── find_test_indices.py        # Prints first question index for each table
 │   └── list_models.py              # Helper for inspecting available models
 └── tests/
+    ├── test_answer_types.py         # Unit tests for all 5 DataBench answer types
+    ├── test_evaluate_baseline.py    # Unit tests for evaluation selection and integrity
+    ├── test_retry.py                # Unit test for retry after execution failure
     ├── test_dataset_loader.py       # Manual validation of all local table loads
     ├── test_docker_error.py         # Checks saving a fabricated error record
     ├── test_docker_execution_error.py # Manual Docker failure check
-    ├── test_evaluator.py            # Manual evaluator comparison check
-    └── test_retry.py                # Unit test for retry after execution failure
+    └── test_evaluator.py            # Manual evaluator comparison check
 ```
 
 ## Requirements
 
-- Python 3.10 or newer (the Docker image currently uses Python 3.13).
-- Docker Desktop on Windows, or a working Docker Engine.
-- A Google Gemini API key and access to the configured Gemini model.
-- Local DataBench Parquet files.
+- Python 3.11 or newer recommended (tested on Python 3.14.8 on Windows and Python 3.10+ on Linux; Docker image uses Python 3.13). Note that `pandas>=3.0` requires Python >= 3.11.
+- Docker Desktop on Windows, or Docker Engine on Linux.
+- A Google Gemini API key (for running baseline generations; offline evaluation and verification do not require an API key).
+- Local DataBench Parquet files (only for running baseline against tables).
 
-Python packages used by the current code include `datasets`, `pandas`, `pyarrow`, `python-dotenv`, `google-genai`, `numpy`, and `databench_eval`. A pinned `requirements.txt` is not included yet, so package versions are not fully locked for reproducible installation.
+A pinned `requirements.txt` is provided in the repository root matching the exact versions used during the stage-one evaluation.
 
-## Setup (Windows PowerShell)
+## Setup
 
 Run commands from the repository root.
 
 ### 1. Create a virtual environment and install dependencies
 
+**On Linux / macOS (Bash):**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+**On Windows (PowerShell):**
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install datasets pandas pyarrow python-dotenv google-genai numpy databench_eval
+python -m pip install -r requirements.txt
 ```
 
-If `databench_eval` cannot be installed under that package name, check its official repository and installation instructions: <https://github.com/jorses/databench_eval>.
+If `databench_eval` cannot be installed from PyPI, install directly from its official repository: `pip install git+https://github.com/jorses/databench_eval.git`.
 
-### 2. Configure Gemini
+### 2. Configure Gemini (Optional for evaluation & tests)
 
 Create a `.env` file in the repository root:
 
@@ -148,37 +164,48 @@ The current metrics are defined as follows:
 
 The current implementation counts every non-success status—including `unscored` records—as an error in these aggregate metrics. Interpret the metric labels accordingly; refine status categories and denominators before using them for final scientific reporting. Also note that when records are appended, the metrics cover the entire file, not just the most recent batch.
 
-## Tests and checks
+## Tests and verification
+
+### 1. Independent reproducibility verification
+
+To verify the integrity and cryptographic hashes of all stage-one evaluation artifacts, predictions, and reviewed errors (no API key or tables required):
+
+```bash
+python scripts/verify_reproducibility.py
+```
+
+### 2. Unit tests
+
+To run all automated test suites (covering retries, dataset selection integrity, and all 5 DataBench answer types: boolean, number, category, list[category], list[number]):
+
+```bash
+python -m unittest tests.test_answer_types tests.test_retry tests.test_evaluate_baseline -v
+```
 
 Syntax check:
 
-```powershell
-python -m py_compile main.py code_executor.py dataset_loader.py evaluator.py llm_client.py metrics.py prompt_builder.py sandbox_runner.py
+```bash
+python -m py_compile main.py code_executor.py dataset_loader.py evaluator.py llm_client.py metrics.py prompt_builder.py sandbox_runner.py scripts/evaluate_baseline.py scripts/verify_reproducibility.py
 ```
 
-Retry unit test:
-
-```powershell
-python -m unittest tests.test_retry -v
-```
-
-The files `test_dataset_loader.py`, `test_docker_error.py`, `test_docker_execution_error.py`, and `test_evaluator.py` are currently written as manual scripts rather than standard `unittest` test cases. Run the relevant script directly when you want to perform those checks, for example:
-
-```powershell
-python .\tests\test_dataset_loader.py
-python .\tests\test_docker_error.py
-python .\tests\test_docker_execution_error.py
-python .\tests\test_evaluator.py
-```
-
-The Docker failure test temporarily replaces `generated_code.py` with intentionally failing code and restores the previous file afterward. Avoid running multiple executions that share this file at the same time.
+The files `test_dataset_loader.py`, `test_docker_error.py`, `test_docker_execution_error.py`, and `test_evaluator.py` in `tests/` are written as manual scripts for local debugging.
 
 ## Stage-one evaluation
 
 `scripts/evaluate_baseline.py` selects 100 paired questions (20 per answer type),
 saves Full/Lite results, validates prediction files, and scores them with `databench_eval`.
 
-```powershell
+### Fast offline re-scoring
+
+To verify and re-score the frozen stage-one evaluation without calling the Gemini API or re-running Docker:
+
+```bash
+python scripts/evaluate_baseline.py score --experiment state/eval_stage1
+```
+
+### Running a new evaluation
+
+```bash
 python scripts/evaluate_baseline.py prepare --experiment state/new_eval --count 100 --seed 42 --offline
 python scripts/evaluate_baseline.py run --experiment state/new_eval
 python scripts/evaluate_baseline.py score --experiment state/new_eval
@@ -206,19 +233,15 @@ Saved experiment results: [report](state/eval_stage1/scores/report.md),
 [metrics](state/eval_stage1/scores/metrics.json), [error analysis](state/eval_stage1/scores/errors.csv).
 The snapshot's metadata, frozen questions, results and final scores can be committed;
 logs, smoke scoring outputs and other experiment directories remain ignored.
-Evaluation tests: `python -m unittest tests.test_evaluate_baseline -v`.
 
 ## Remaining baseline limitations
 
-- Add a pinned `requirements.txt` or lock file and record tested package versions.
 - The generated code is passed to Docker through a shared `generated_code.py` file. Concurrent runs can conflict; use per-run temporary files or unique paths before parallelizing.
 - The retry prompt receives a generic Docker failure message rather than the captured traceback. Return structured execution errors so the model can correct the actual failure.
 - The code-execution sandbox is restricted with Docker settings, but executing arbitrary LLM-generated Python still requires careful security review; Docker settings alone are not a formal guarantee of safety.
-- Normalize and test all answer types, missing values, lists, and numeric comparisons against the evaluator's expected behavior.
 - Clarify metric definitions and distinguish generation, syntax-validation, execution, missing-reference, and incorrect-answer cases.
 - The local development run uses `qa` / `train` reference answers. Confirm the required held-out split and official evaluation procedure before reporting benchmark scores.
 - The evaluation harness exports verified prediction files for its frozen development subset. A complete competition submission and competition-data loader remain separate work.
-- Record model name, prompt version, dataset revision/split, run parameters, and package versions for each experiment.
 - The course brief requires a separate appendix documenting LLM/AI-tool use, including tools/models, purposes, prompts, and relevant outputs.
 
 ## Project context

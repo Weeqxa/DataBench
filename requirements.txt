@@ -1,0 +1,8 @@
+datasets==5.1.0
+pandas==3.1.0
+pyarrow==26.0.0
+python-dotenv==1.2.4
+google-genai==2.33.0
+numpy==2.5.3
+databench_eval==4.0.1
+huggingface-hub==2.3.0

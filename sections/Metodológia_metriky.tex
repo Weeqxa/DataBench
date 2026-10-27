@@ -108,7 +108,7 @@ Na zabezpečenie reprodukovateľnosti je potrebné zaznamenávať parametre pou�
 \midrule
 
 \multicolumn{2}{@{}l}{\textbf{Generovanie kódu}} \\
-Model & \texttt{gemini-3.5-flash-lite} cez Google Gemini API (knižnica \texttt{google-genai}, verzia: \textit{doplniť}) \\
+Model & \texttt{gemini-3.5-flash-lite} cez Google Gemini API (knižnica \texttt{google-genai}, verzia 2.33.0) \\
 Parametre generovania & predvolené hodnoty API; \texttt{temperature}, \texttt{top\_p}, \texttt{top\_k} ani \texttt{seed} nie sú nastavené, preto generovanie nie je deterministické \\
 Prompt & verzia v1 (\texttt{build\_prompt()}), bez systémového promptu; obsahuje otázku, schému tabuľky, očakávaný typ odpovede a pravidlá pre výstup \\
 Počet pokusov & najviac 2 generovania na otázku (prvotné a jedno opravné); pri limite požiadaviek API až 5 opakovaní s čakaním 5--60~s \\
@@ -120,10 +120,10 @@ Obmedzenia & bez siete, 512~MB RAM, 1~CPU, časový limit 20~s \\
 
 \addlinespace
 \multicolumn{2}{@{}l}{\textbf{Dáta a vyhodnotenie}} \\
-Dataset & \texttt{cardiffnlp/databench}, konfigurácia \texttt{qa}, rozdelenie \texttt{train}; počet záznamov a revízia: \textit{doplniť} \\
+Dataset & \texttt{cardiffnlp/databench}, konfigurácia \texttt{qa}, rozdelenie \texttt{train}; 1\,830 záznamov, fingerprint revízie \texttt{7cab82893c6a27eb} \\
 Režimy & \texttt{full}: \texttt{all.parquet}, referenčná odpoveď \texttt{answer}; \texttt{lite}: \texttt{sample.parquet}, referenčná odpoveď \texttt{sample\_answer} \\
-Hodnotenie & \texttt{databench\_eval} (verzia alebo commit: \textit{doplniť}) \\
-Ostatné knižnice & \texttt{datasets}, \texttt{pandas}, \texttt{pyarrow}, \texttt{numpy} (verzie: \textit{doplniť}) \\
+Hodnotenie & \texttt{databench\_eval} (verzia 4.0.1) \\
+Ostatné knižnice & \texttt{datasets} (5.1.0), \texttt{pandas} (3.1.0), \texttt{pyarrow} (26.0.0), \texttt{numpy} (2.5.3) \\
 
 \bottomrule
 \end{tabular}
