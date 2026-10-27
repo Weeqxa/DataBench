@@ -49,7 +49,7 @@
     "code_executor.py": "77ae4c3ef0c0b31dbb38defc3ea6118660cf9ee6c06c0348e22d9958ed835e89",
     "sandbox_runner.py": "ef5806fad09ab5fb3a2549848db5f29a746db573bf11b5889f7a860edb047b90",
     "evaluator.py": "2f14a32f2903e4f6814d6251e0c19b4e95fff822105f602976998db7921c3e7d",
-    "Dockerfile": "d96ac499ff5223cdef64cdc1fe95bf20c4e1dd07bb111f19fcff557a2227e4f2",
+    "Dockerfile": "47a3ec55972db4dc5f5ca0f4fce21e9bbb402fa2868d91aac06d451800db0618",
     "scripts/evaluate_baseline.py": "128cb5db9a56c5bda1153ada9e28ee5f3c9a796ef1c7ccdb7bd4d6fedc330f6e"
   },
   "table_sha256": {
@@ -172,5 +172,5 @@
     "data/079_Coffee/all.parquet": "d6fe74633c143ef54804c29fa54a21fe639e08658c05b9f3f964002b9f3713c7",
     "data/079_Coffee/sample.parquet": "da3781af4d225ba1351a138065abca78ac190e320024255e8457036ceacca2da"
   },
-  "selection_sha256": "4a8f893cf67a9163d218d5fda01ff00fb63dd9f1fc4e267f38ac83893b609e92"
+  "selection_sha256": "f211bac89b160a00da666bdb0695915a4a634b5fbc6454a21442756312453997"
 }

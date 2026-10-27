@@ -1,2 +1,0 @@
-# Ensure reproducible evaluation snapshot files retain exact byte-for-byte CRLF line endings
-state/eval_stage1/** text eol=crlf

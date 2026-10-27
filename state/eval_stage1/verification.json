@@ -3,14 +3,14 @@
   "unit_test_command": "python -m unittest tests.test_evaluate_baseline tests.test_retry -v",
   "repeat_scoring_identical": true,
   "scoring_artifact_sha256": {
-    "decisions_full.json": "768238c8aee7ea576b4af086bf7b0fb76121e8b70ce209b5e0694b91199f61e1",
-    "decisions_lite.json": "ce5cfb61eb259a34badd0931da6517a14bd1d9e3ee9477f2c2fb66e1104ae1f5",
-    "errors.csv": "1dc7e9f6b4ea38db85f6ad607f147de0e623243381752a6bf4570dc7d9961a1f",
-    "errors.json": "b660271ea276b05585556e1744ea3aaf573a812530b964cfaacaac1f8b8ebf08",
-    "metrics.json": "65ce11d2cabac88a2ac32e2b3c7e6eb37574f43fbe50b7db6878deea8561bd47",
-    "predictions.txt": "e057250f3e65fe4f1d37f95706e613a7288ffc86847d6b3d6d4aa2c3619ff82a",
-    "predictions_lite.txt": "0b5b3e62e4ec89a55f78e778225f658b9eae664574bf19e984f6acc598b733c2",
-    "report.md": "9d8ec113130c7fb2cc83fe70d09562a5bed4f3b6209762b579b6bec1d399f591"
+    "decisions_full.json": "dc33f4bd2026dcafa84daacdf8621cfdc9da5349b1ac4daa9d4a4ae6abe1c110",
+    "decisions_lite.json": "1de628d66ff6776735a41be5630832973688a33213eacb29f2392cc368edfd02",
+    "errors.csv": "f105b5134b2d66cab3117d47b4d2f01cbb3b9665cb46bc711f2c052d44aa62a6",
+    "errors.json": "58bea73b09ea2f2d24525391eae33e54f66444588996d11cbb3f90baa39b2add",
+    "metrics.json": "264a6c9f2ae864578707294fc0b9e289e64248fa0fd7381c54ab7f25f86e7d89",
+    "predictions.txt": "2c04299a86e4ad27525ea002a058034ace64f2f4080f3be1dd1d855974c863fb",
+    "predictions_lite.txt": "71bcf305ca63db1f5eba983068e971d76a039d1fbb044c52f5af8044c0cd28db",
+    "report.md": "d0f90053a353dddee3d641170d0e3b1f108bff0a21131d7bec9c84f1048788dc"
   },
   "baseline_hashes_unchanged": true,
   "selected_questions": 100,

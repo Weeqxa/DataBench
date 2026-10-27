@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent reproducibility and integrity verifier for DataBench Stage 1 evaluation.
+"""Integrity check of saved artifacts for DataBench Stage 1 evaluation.
 
 Validates:
 1. Frozen experiment configuration and question selection.
@@ -7,7 +7,7 @@ Validates:
 3. Prediction exports and scoring artifact SHA-256 hashes against verification.json.
 4. Consistency between metrics.json, report.md, and decisions.
 5. Baseline file hashes.
-6. Support for cross-platform validation (Windows CRLF & Linux LF).
+6. Support for cross-platform validation.
 """
 
 import hashlib
@@ -56,7 +56,7 @@ def count_jsonl_lines(path: Path) -> int:
 
 def main():
     print("=" * 75)
-    print("DataBench Stage 1 — Reproducibility & Integrity Verification")
+    print("DataBench Stage 1 — Integrity Check of Saved Artifacts")
     print("=" * 75)
 
     if not EXPERIMENT_DIR.exists():

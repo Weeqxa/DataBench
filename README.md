@@ -35,7 +35,7 @@ The retry loop currently treats a Docker failure as a generic execution error in
 ├── scripts/
 │   ├── download_all_tables.py       # Downloads all.parquet and sample.parquet files
 │   ├── evaluate_baseline.py        # 100-question development evaluation harness
-│   ├── verify_reproducibility.py   # Independent cryptographic hash and metric verifier
+│   ├── verify_reproducibility.py   # Integrity check of saved evaluation artifacts
 │   ├── inspect_databench_files.py   # Inspects repository files on Hugging Face
 │   ├── validate_all_tables.py      # Checks downloaded table files
 │   ├── find_test_indices.py        # Prints first question index for each table
@@ -52,7 +52,7 @@ The retry loop currently treats a Docker failure as a generic execution error in
 
 ## Requirements
 
-- Python 3.11 or newer recommended (tested on Python 3.14.8 on Windows and Python 3.10+ on Linux; Docker image uses Python 3.13). Note that `pandas>=3.0` requires Python >= 3.11.
+- Python 3.11 or newer (tested on Python 3.14.8 on Windows and Python 3.11+ on Linux; Docker image uses Python 3.13). Note that `pandas>=3.0` requires Python >= 3.11.
 - Docker Desktop on Windows, or Docker Engine on Linux.
 - A Google Gemini API key (for running baseline generations; offline evaluation and verification do not require an API key).
 - Local DataBench Parquet files (only for running baseline against tables).
@@ -166,7 +166,7 @@ The current implementation counts every non-success status—including `unscored
 
 ## Tests and verification
 
-### 1. Independent reproducibility verification
+### 1. Integrity check of saved artifacts
 
 To verify the integrity and cryptographic hashes of all stage-one evaluation artifacts, predictions, and reviewed errors (no API key or tables required):
 
@@ -202,6 +202,17 @@ To verify and re-score the frozen stage-one evaluation without calling the Gemin
 ```bash
 python scripts/evaluate_baseline.py score --experiment state/eval_stage1
 ```
+
+*Note: Re-scoring writes CSV records using platform newline conventions. If git status shows line ending differences on `errors.csv` after running score, use `git checkout state/eval_stage1/scores/errors.csv` to restore the committed file.*
+
+### Clean-environment verification run
+
+End-to-end verification on a fresh clone in a clean Linux environment (Ubuntu 22.04 LTS, x86_64, Python 3.11, Docker Engine 29.9.2) performed on 2026-10-27:
+- Fresh repository clone, clean virtual environment setup via `pip install -r requirements.txt`, and Docker sandbox build (`docker build -t databench-executor .`) all succeeded without errors.
+- Automated test suites (`tests.test_answer_types`, `tests.test_retry`, `tests.test_evaluate_baseline`) passed with 100% success.
+- `scripts/verify_reproducibility.py` passed all 31 / 31 cryptographic artifact hash and metric consistency checks (100% PASS).
+- Offline re-scoring via `evaluate_baseline.py score --experiment state/eval_stage1` reproduced the official 86.0% Full and 81.0% Lite accuracies identically.
+- Online smoke run on 10 paired questions (`state/test_run_10`) via Gemini 2.5 Flash and Docker executed with 100% execution success, achieving 80.0% Full and 70.0% Lite accuracy.
 
 ### Running a new evaluation
 
